@@ -1,1 +1,2302 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#090e1b">
+<meta name="description" content="گپ‌خانه؛ چت آنلاین و لحظه‌ای با اتاق‌های عمومی و پیام خصوصی">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'unsafe-inline'; style-src 'unsafe-inline' https://cdn.jsdelivr.net; font-src https://cdn.jsdelivr.net; img-src 'self' data:; connect-src https:; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta name="referrer" content="no-referrer">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%237c5cff'/%3E%3Ctext x='32' y='45' font-size='38' text-anchor='middle' fill='white' font-family='sans-serif'%3E%D9%82%3C/text%3E%3C/svg%3E">
+<title>گپ‌خانه</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css">
+<script>
+/* ======================= تنظیم آنلاین (فقط همین یک خط) =======================
+   آدرس Realtime Database در Firebase را بین دو نقل‌قول بگذار، مثلاً:
+   'https://نام-پروژه-default-rtdb.firebaseio.com'
+   اگر خالی بماند، سایت فقط داخل همین مرورگر کار می‌کند و آنلاین نیست. */
+window.GAPKHANE_DB_URL = '';
+</script>
+<script>try{var t=JSON.parse(localStorage.getItem('gk2:theme'));if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
+<style>
+/* گپ‌خانه — استایل مشترک (چت + پنل مدیریت) */
+:root{
+  color-scheme:dark;
+  --bg:#090e1b;--panel:#111a2b;--panel2:#172238;--field:#0d1525;
+  --text:#edf3ff;--muted:#8c9bb5;--line:#26334a;
+  --accent:#7c5cff;--accent2:#28d7bd;--on-accent:#fff;
+  --mine:#6b4df6;--other:#19263b;
+  --danger:#ff647c;--ok:#35d399;--warn:#f0a73a;
+  --shadow:0 18px 60px #0007;
+}
+[data-theme="light"]{
+  color-scheme:light;
+  --bg:#f1f4fa;--panel:#fff;--panel2:#f5f7fc;--field:#f6f8fc;
+  --text:#17213a;--muted:#6c7891;--line:#e1e6f0;
+  --accent:#6445e8;--accent2:#089e8d;
+  --mine:#6445e8;--other:#fff;
+  --danger:#d63e5c;--ok:#12906b;--warn:#b9741a;
+  --shadow:0 18px 60px #25325220;
+}
+[data-app="admin"]{--accent:#e8a33d;--on-accent:#1a1204;--mine:#e8a33d}
+html[data-theme="light"] [data-app="admin"]{--accent:#c97d12;--on-accent:#fff}
 
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{
+  font-family:Vazirmatn,Tahoma,sans-serif;background:var(--bg);color:var(--text);
+  font-size:14px;line-height:1.8;-webkit-tap-highlight-color:transparent
+}
+button,input,textarea,select{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none}
+button:disabled{opacity:.45;cursor:not-allowed}
+a{color:var(--accent2)}
+[hidden]{display:none!important}
+:focus-visible{outline:2px solid var(--accent2);outline-offset:2px}
+::selection{background:var(--accent);color:var(--on-accent)}
+*{scrollbar-width:thin;scrollbar-color:var(--line) transparent}
+.muted{color:var(--muted)}.small{font-size:12px}.tiny{font-size:11px}
+.grow{flex:1;min-width:0}.row{display:flex;align-items:center;gap:10px}.wrap{flex-wrap:wrap}
+.ellipsis{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ltr{direction:ltr;unicode-bidi:plaintext}
+
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:9px 15px;border-radius:12px;background:var(--panel2);
+  border:1px solid var(--line);transition:transform .12s,filter .12s,background .12s;
+  white-space:nowrap
+}
+.btn:hover:not(:disabled){filter:brightness(1.12)}
+.btn:active:not(:disabled){transform:scale(.97)}
+.btn.primary{background:var(--accent);color:var(--on-accent);border-color:transparent;font-weight:800}
+.btn.danger{background:transparent;color:var(--danger);border-color:color-mix(in srgb,var(--danger) 45%,transparent)}
+.btn.danger.solid{background:var(--danger);color:#fff;border-color:transparent}
+.btn.ghost{background:transparent;border-color:transparent}
+.btn.ghost:hover:not(:disabled){background:var(--panel2);filter:none}
+.btn.sm{padding:4px 10px;font-size:12px;border-radius:9px}
+.btn.icon-btn{width:40px;height:40px;padding:0}
+.btn.block{width:100%}
+
+input,textarea,select{
+  width:100%;background:var(--field);border:1px solid var(--line);
+  border-radius:12px;padding:10px 13px;outline:none;transition:border-color .15s
+}
+input:focus,textarea:focus,select:focus{border-color:var(--accent)}
+input[type=checkbox],input[type=radio]{width:auto;accent-color:var(--accent)}
+textarea{resize:vertical}
+label.lbl{display:block;font-weight:700;margin-bottom:6px;font-size:13px}
+.field{margin-bottom:15px}
+.hint{font-size:11px;color:var(--muted);margin-top:4px}
+.err{color:var(--danger);font-size:12px;min-height:20px;margin-top:6px}
+.check{display:flex;align-items:center;gap:8px;cursor:pointer}
+
+.avatar{
+  display:grid;place-items:center;flex-shrink:0;width:38px;height:38px;
+  border-radius:14px;color:#fff;font-weight:900;font-size:15px;text-shadow:0 1px 2px #0004
+}
+.tag{
+  display:inline-block;font-size:10px;font-weight:800;padding:0 7px;border-radius:99px;
+  line-height:18px;background:color-mix(in srgb,var(--accent2) 18%,transparent);color:var(--accent2)
+}
+.tag.admin{background:color-mix(in srgb,var(--warn) 20%,transparent);color:var(--warn)}
+.tag.bad{background:color-mix(in srgb,var(--danger) 18%,transparent);color:var(--danger)}
+.tag.ok{background:color-mix(in srgb,var(--ok) 18%,transparent);color:var(--ok)}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--muted);display:inline-block;flex-shrink:0}
+.dot.on{background:var(--ok);box-shadow:0 0 0 3px color-mix(in srgb,var(--ok) 25%,transparent)}
+
+/* پنجره‌ی گفتگو */
+.gk-scrim{
+  position:fixed;inset:0;z-index:1000;display:grid;place-items:center;padding:14px;
+  background:#050810a8;backdrop-filter:blur(3px);animation:gkfade .14s ease
+}
+.gk-modal{
+  width:min(480px,100%);max-height:92vh;display:flex;flex-direction:column;
+  background:var(--panel);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow)
+}
+.gk-modal.wide{width:min(720px,100%)}
+.gk-mh{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 6px}
+.gk-mh h3{margin:0;font-size:17px;font-weight:900}
+.gk-mb{padding:10px 20px 6px;overflow:auto}
+.gk-mf{display:flex;justify-content:flex-start;gap:8px;padding:14px 20px 18px;flex-wrap:wrap}
+.gk-p{margin:6px 0 10px;white-space:pre-wrap}
+@keyframes gkfade{from{opacity:0}to{opacity:1}}
+
+.gk-toasts{
+  position:fixed;bottom:22px;left:50%;transform:translateX(-50%);z-index:1100;
+  display:flex;flex-direction:column;gap:8px;align-items:center;width:min(92vw,420px);pointer-events:none
+}
+.gk-toast{
+  background:var(--text);color:var(--bg);padding:9px 18px;border-radius:14px;
+  box-shadow:var(--shadow);font-size:13px;text-align:center;animation:gkfade .15s ease
+}
+.gk-toast.error{background:var(--danger);color:#fff}
+.gk-toast.ok{background:var(--ok);color:#06150f}
+
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+#chatRoot,#adminRoot{height:100%}
+body[data-app="chat"] .auth{
+  min-height:100%;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,480px);align-items:center;gap:40px;
+  padding:32px clamp(18px,6vw,90px);overflow:auto;
+  background:radial-gradient(ellipse at 12% 10%,#795cff22,transparent 45%),radial-gradient(ellipse at 90% 90%,#22d3bb14,transparent 40%),var(--bg)
+}
+body[data-app="chat"] .hero .brand{display:flex;align-items:center;gap:12px;margin-bottom:30px}
+body[data-app="chat"] .logo{
+  display:grid;place-items:center;width:48px;height:48px;border-radius:17px;color:#fff;font-size:24px;font-weight:900;
+  background:linear-gradient(135deg,var(--accent),#bc70ff);box-shadow:0 8px 24px #7c5cff40;flex-shrink:0
+}
+body[data-app="chat"] .brand-name{font-size:22px;font-weight:900}
+body[data-app="chat"] .hero h1{font-size:clamp(28px,4.4vw,46px);line-height:1.5;margin:0 0 12px;font-weight:900;max-width:15em}
+body[data-app="chat"] .hero p.lead{color:var(--muted);font-size:15px;max-width:30em;margin:0 0 30px}
+body[data-app="chat"] .demo{display:flex;flex-direction:column;gap:9px;max-width:380px}
+body[data-app="chat"] .demo .b{padding:9px 14px;border-radius:18px;background:var(--other);border:1px solid var(--line);width:fit-content;max-width:90%}
+body[data-app="chat"] .demo .b.me{background:var(--mine);color:#fff;border-color:transparent;align-self:flex-start}
+body[data-app="chat"] .demo .b small{display:block;color:var(--accent2);font-weight:800;font-size:11px}
+body[data-app="chat"] .demo .b.me small{color:#ffffffb0}
+body[data-app="chat"] .auth-card{background:var(--panel);border:1px solid var(--line);border-radius:26px;padding:26px;box-shadow:var(--shadow)}
+body[data-app="chat"] .tabs{display:grid;grid-template-columns:1fr 1fr;gap:4px;background:var(--field);border-radius:14px;padding:4px;margin-bottom:22px}
+body[data-app="chat"] .tabs button{padding:9px;border-radius:11px;font-weight:800;color:var(--muted)}
+body[data-app="chat"] .tabs button[aria-selected=true]{background:var(--panel2);color:var(--text);box-shadow:0 2px 8px #0003}
+body[data-app="chat"] .pw{position:relative}
+body[data-app="chat"] .pw input{padding-left:46px}
+body[data-app="chat"] .pw .eye{position:absolute;left:6px;top:50%;transform:translateY(-50%);width:36px;height:36px;border-radius:10px;color:var(--muted)}
+body[data-app="chat"] .meter{height:5px;border-radius:9px;background:var(--line);margin-top:8px;overflow:hidden}
+body[data-app="chat"] .meter i{display:block;height:100%;width:0;transition:width .25s,background .25s}
+body[data-app="chat"] .swatches{display:flex;gap:9px;flex-wrap:wrap}
+body[data-app="chat"] .swatches button{width:32px;height:32px;border-radius:50%;border:3px solid var(--panel);outline:1px solid var(--line)}
+body[data-app="chat"] .swatches button[aria-checked=true]{outline:2px solid var(--accent2)}
+body[data-app="chat"] .notice{padding:10px 13px;border-radius:12px;font-size:12px;margin-bottom:16px;background:color-mix(in srgb,var(--warn) 14%,transparent);color:var(--warn)}
+body[data-app="chat"] .auth-foot{display:flex;justify-content:space-between;gap:10px;margin-top:18px;font-size:12px;color:var(--muted)}
+body[data-app="chat"] .app{height:100%;display:grid;grid-template-columns:320px minmax(0,1fr)}
+body[data-app="chat"] .sidebar{min-height:0;background:var(--panel);border-left:1px solid var(--line);display:flex;flex-direction:column;z-index:20}
+body[data-app="chat"] .side-head{padding:16px 16px 10px}
+body[data-app="chat"] .me{display:flex;align-items:center;gap:10px;padding:10px;border-radius:16px;background:var(--panel2);border:1px solid var(--line)}
+body[data-app="chat"] .side-search{padding:0 16px 8px}
+body[data-app="chat"] .side-scroll{flex:1;min-height:0;overflow:auto;padding:0 10px 10px}
+body[data-app="chat"] .sec{display:flex;align-items:center;justify-content:space-between;padding:12px 8px 5px;font-weight:800;font-size:12px;color:var(--muted)}
+body[data-app="chat"] .item{display:flex;align-items:center;gap:10px;width:100%;text-align:right;padding:8px;border-radius:14px}
+body[data-app="chat"] .item:hover{background:var(--panel2)}
+body[data-app="chat"] .item[aria-current=true]{background:color-mix(in srgb,var(--accent) 18%,transparent)}
+body[data-app="chat"] .ricon{display:grid;place-items:center;width:40px;height:40px;border-radius:14px;background:var(--panel2);font-size:20px;flex-shrink:0;border:1px solid var(--line)}
+body[data-app="chat"] .item-main{flex:1;min-width:0}
+body[data-app="chat"] .item-top{display:flex;justify-content:space-between;gap:6px;align-items:center}
+body[data-app="chat"] .item-name{font-weight:800}
+body[data-app="chat"] .item-time{font-size:10px;color:var(--muted)}
+body[data-app="chat"] .item-last{font-size:12px;color:var(--muted)}
+body[data-app="chat"] .badge{min-width:20px;height:20px;padding:0 6px;border-radius:99px;background:var(--accent);color:var(--on-accent);font-size:11px;font-weight:800;display:grid;place-items:center}
+body[data-app="chat"] .side-foot{padding:10px;border-top:1px solid var(--line);display:grid;grid-template-columns:1fr 1fr;gap:6px}
+body[data-app="chat"] .side-foot .wide{grid-column:1/-1}
+body[data-app="chat"] .scrim{display:none}
+body[data-app="chat"] .chat{display:flex;flex-direction:column;min-width:0;min-height:0;position:relative}
+body[data-app="chat"] .topbar{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--line);background:var(--panel)}
+body[data-app="chat"] .topbar h2{font-size:16px;margin:0;font-weight:900}
+body[data-app="chat"] .mobile-only{display:none}
+body[data-app="chat"] .pin{display:flex;align-items:center;gap:10px;padding:7px 16px;background:var(--panel2);border-bottom:1px solid var(--line);cursor:pointer;font-size:12px}
+body[data-app="chat"] .searchbar{padding:10px 16px 0}
+body[data-app="chat"] .messages{flex:1;min-height:0;overflow-y:auto;padding:16px;overscroll-behavior:contain}
+body[data-app="chat"] .feed{width:min(860px,100%);margin:auto;display:flex;flex-direction:column}
+body[data-app="chat"] .empty{text-align:center;margin:auto;padding:40px 16px;color:var(--muted)}
+body[data-app="chat"] .empty .big{font-size:44px}
+body[data-app="chat"] .empty h3{color:var(--text);margin:6px 0}
+body[data-app="chat"] .day{align-self:center;border:1px solid var(--line);background:var(--panel);border-radius:99px;padding:2px 13px;font-size:11px;color:var(--muted);margin:14px 0 4px}
+body[data-app="chat"] .sys{align-self:center;color:var(--muted);font-size:12px;margin:8px 0;text-align:center}
+body[data-app="chat"] .more{align-self:center;margin:6px}
+body[data-app="chat"] .message{display:flex;align-items:flex-end;gap:8px;margin-top:10px;max-width:min(82%,600px);align-self:flex-end}
+body[data-app="chat"] .message.cont{margin-top:3px}
+body[data-app="chat"] .message.mine{align-self:flex-start;flex-direction:row}
+body[data-app="chat"] .message .av{width:38px;flex-shrink:0}
+body[data-app="chat"] .message.mine .av{display:none}
+body[data-app="chat"] .mbody{min-width:0;display:flex;flex-direction:column}
+body[data-app="chat"] .mhead{font-size:12px;font-weight:900;margin:0 10px 3px;display:flex;gap:6px;align-items:center}
+body[data-app="chat"] .mhead button{font-weight:900}
+body[data-app="chat"] .bubble{padding:8px 13px 5px;border-radius:18px;background:var(--other);border:1px solid var(--line);overflow-wrap:anywhere;white-space:pre-wrap}
+body[data-app="chat"] .message.mine .bubble{background:var(--mine);color:#fff;border-color:transparent}
+body[data-app="chat"] .message.mentioned .bubble{box-shadow:0 0 0 2px var(--accent2)}
+body[data-app="chat"] .message:not(.cont):not(.mine) .bubble{border-top-right-radius:5px}
+body[data-app="chat"] .message.mine:not(.cont) .bubble{border-top-left-radius:5px}
+body[data-app="chat"] .bubble a{color:inherit;text-decoration:underline}
+body[data-app="chat"] .mention{color:var(--accent2);font-weight:800;cursor:pointer}
+body[data-app="chat"] .message.mine .mention{color:#fff;text-decoration:underline}
+body[data-app="chat"] .quote{border-right:3px solid var(--accent2);padding:2px 9px;margin-bottom:5px;background:#0000001f;border-radius:7px;font-size:12px;cursor:pointer;display:block;max-width:100%}
+body[data-app="chat"] .quote b{display:block;color:var(--accent2)}
+body[data-app="chat"] .message.mine .quote b{color:#fff}
+body[data-app="chat"] .quote span{display:block;opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+body[data-app="chat"] .meta{display:flex;justify-content:flex-end;gap:6px;font-size:10px;opacity:.7;margin-top:2px}
+body[data-app="chat"] .reacts{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px}
+body[data-app="chat"] .react{padding:0 8px;border-radius:99px;border:1px solid var(--line);background:var(--panel);font-size:12px;line-height:22px}
+body[data-app="chat"] .react.on{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 22%,var(--panel))}
+body[data-app="chat"] .tools{display:none;gap:4px;margin-top:4px;flex-wrap:wrap}
+body[data-app="chat"] .message:hover .tools,body[data-app="chat"] .message.show .tools,body[data-app="chat"] .message:focus-within .tools{display:flex}
+body[data-app="chat"] .tools button{border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:1px 8px;font-size:11px}
+body[data-app="chat"] .tools button:hover{border-color:var(--accent)}
+body[data-app="chat"] .picker{display:none;gap:2px;padding:3px 5px;border:1px solid var(--line);background:var(--panel);border-radius:99px;margin-top:4px;width:fit-content}
+body[data-app="chat"] .message.picking .picker{display:flex}
+body[data-app="chat"] .picker button{font-size:18px;padding:0 4px;border-radius:8px}
+body[data-app="chat"] .message.flash .bubble{animation:flash 1.4s ease}
+@keyframes flash{0%,60%{box-shadow:0 0 0 3px var(--accent2)}100%{box-shadow:0 0 0 0 transparent}}
+body[data-app="chat"] .down{position:absolute;left:20px;bottom:130px;width:42px;height:42px;border-radius:50%;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);z-index:5}
+body[data-app="chat"] .composer{border-top:1px solid var(--line);padding:10px 16px calc(10px + env(safe-area-inset-bottom));background:var(--panel)}
+body[data-app="chat"] .composer-in{width:min(860px,100%);margin:auto}
+body[data-app="chat"] .bar{margin-bottom:8px;padding:7px 12px;background:var(--panel2);border-radius:10px;border-right:3px solid var(--accent);display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px}
+body[data-app="chat"] .bar span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+body[data-app="chat"] .box{display:flex;align-items:flex-end;gap:6px;background:var(--field);border:1px solid var(--line);border-radius:18px;padding:5px}
+body[data-app="chat"] .box textarea{flex:1;min-width:0;resize:none;min-height:42px;max-height:140px;padding:9px 6px;background:transparent;border:0;border-radius:10px}
+body[data-app="chat"] .box textarea:focus{border:0}
+body[data-app="chat"] .send{display:grid;place-items:center;width:42px;height:42px;border-radius:13px;background:var(--accent);color:var(--on-accent);flex-shrink:0;font-size:17px}
+body[data-app="chat"] .tool{display:grid;place-items:center;width:42px;height:42px;border-radius:12px;font-size:20px;flex-shrink:0}
+body[data-app="chat"] .tool:hover{background:var(--panel2)}
+body[data-app="chat"] .emoji{padding:8px;margin-bottom:8px;border:1px solid var(--line);border-radius:15px;background:var(--panel2);display:grid;grid-template-columns:repeat(auto-fill,minmax(38px,1fr));gap:3px;max-height:150px;overflow:auto}
+body[data-app="chat"] .emoji button{font-size:22px;padding:3px;border-radius:8px}
+body[data-app="chat"] .emoji button:hover{background:var(--panel)}
+body[data-app="chat"] .chint{display:flex;justify-content:space-between;color:var(--muted);font-size:10px;padding:4px 5px 0}
+body[data-app="chat"] .blocked{padding:13px;text-align:center;color:var(--muted);background:var(--field);border:1px dashed var(--line);border-radius:14px}
+body[data-app="chat"] hr{border:0;border-top:1px solid var(--line);margin:14px 0}
+body[data-app="chat"] .pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(44px,1fr));gap:6px}
+body[data-app="chat"] .pgrid button{font-size:22px;padding:6px;border:1px solid var(--line);border-radius:12px}
+body[data-app="chat"] .pgrid button[aria-checked=true]{border-color:var(--accent2);background:var(--panel2)}
+@media(max-width:860px){body[data-app="chat"] .auth{grid-template-columns:minmax(0,1fr);gap:22px;padding:20px 14px}
+body[data-app="chat"] .hero .demo,body[data-app="chat"] .hero p.lead{display:none}
+body[data-app="chat"] .hero h1{font-size:24px;margin:0}
+body[data-app="chat"] .hero .brand{margin-bottom:12px}
+body[data-app="chat"] .app{grid-template-columns:minmax(0,1fr)}
+body[data-app="chat"] .sidebar{position:fixed;inset-block:0;right:0;width:min(330px,90vw);transform:translateX(105%);transition:transform .2s;box-shadow:var(--shadow)}
+body[data-app="chat"] .sidebar.open{transform:none}
+body[data-app="chat"] .scrim.show{display:block;position:fixed;inset:0;background:#0008;z-index:15}
+body[data-app="chat"] .mobile-only{display:inline-flex}
+body[data-app="chat"] .messages{padding:10px}
+body[data-app="chat"] .message{max-width:92%}
+body[data-app="chat"] .down{bottom:120px}
+}
+
+body[data-app="admin"] .gate{min-height:100%;display:grid;place-items:center;padding:20px;background:radial-gradient(ellipse at 80% 10%,#e8a33d1c,transparent 45%),var(--bg)}
+body[data-app="admin"] .gate-card{width:min(440px,100%);background:var(--panel);border:1px solid var(--line);border-radius:24px;padding:28px;box-shadow:var(--shadow)}
+body[data-app="admin"] .gate-card h1{margin:0 0 4px;font-size:22px;font-weight:900}
+body[data-app="admin"] .shield{display:grid;place-items:center;width:52px;height:52px;border-radius:17px;background:var(--accent);color:var(--on-accent);font-size:26px;margin-bottom:14px}
+body[data-app="admin"] .shell{height:100%;display:grid;grid-template-columns:250px minmax(0,1fr)}
+body[data-app="admin"] .nav{background:var(--panel);border-left:1px solid var(--line);display:flex;flex-direction:column;min-height:0;padding:16px 12px}
+body[data-app="admin"] .nav-brand{display:flex;align-items:center;gap:10px;padding:4px 8px 16px;font-weight:900;font-size:16px}
+body[data-app="admin"] .nav-brand .shield{width:38px;height:38px;font-size:19px;margin:0;border-radius:12px}
+body[data-app="admin"] .nav-list{display:flex;flex-direction:column;gap:3px;flex:1;overflow:auto}
+body[data-app="admin"] .nav-list button{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;text-align:right;color:var(--muted);font-weight:700}
+body[data-app="admin"] .nav-list button:hover{background:var(--panel2);color:var(--text)}
+body[data-app="admin"] .nav-list button[aria-current=page]{background:color-mix(in srgb,var(--accent) 18%,transparent);color:var(--text)}
+body[data-app="admin"] .nav-list .cnt{margin-right:auto;min-width:20px;height:20px;padding:0 6px;border-radius:99px;background:var(--danger);color:#fff;font-size:11px;display:grid;place-items:center}
+body[data-app="admin"] .nav-foot{display:grid;gap:6px;padding-top:10px;border-top:1px solid var(--line)}
+body[data-app="admin"] .main{display:flex;flex-direction:column;min-width:0;min-height:0}
+body[data-app="admin"] .top{display:flex;align-items:center;gap:12px;padding:12px 22px;border-bottom:1px solid var(--line);background:var(--panel)}
+body[data-app="admin"] .top h1{font-size:19px;margin:0;font-weight:900;flex:1}
+body[data-app="admin"] .view{flex:1;min-height:0;overflow:auto;padding:22px}
+body[data-app="admin"] .wrapc{width:min(1100px,100%);margin:auto}
+body[data-app="admin"] .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:18px}
+body[data-app="admin"] .stat{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:14px 16px}
+body[data-app="admin"] .stat b{display:block;font-size:26px;line-height:1.3;font-weight:900}
+body[data-app="admin"] .stat span{color:var(--muted);font-size:12px}
+body[data-app="admin"] .grid2{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:14px;margin-bottom:14px}
+body[data-app="admin"] .card{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:18px;margin-bottom:14px}
+body[data-app="admin"] .grid2 .card{margin:0}
+body[data-app="admin"] .card h3{margin:0 0 12px;font-size:15px;font-weight:900}
+body[data-app="admin"] .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
+body[data-app="admin"] .toolbar input,body[data-app="admin"] .toolbar select{width:auto;flex:1;min-width:150px;max-width:280px}
+body[data-app="admin"] .tblwrap{overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:18px}
+body[data-app="admin"] table{width:100%;border-collapse:collapse;min-width:640px}
+body[data-app="admin"] th{font-size:11px;color:var(--muted);text-align:right;padding:10px 14px;border-bottom:1px solid var(--line);font-weight:800;background:var(--panel2)}
+body[data-app="admin"] td{padding:9px 14px;border-bottom:1px solid var(--line);vertical-align:middle}
+body[data-app="admin"] tr:last-child td{border-bottom:0}
+body[data-app="admin"] tbody tr:hover{background:color-mix(in srgb,var(--panel2) 60%,transparent)}
+body[data-app="admin"] .acts{display:flex;gap:5px;flex-wrap:wrap}
+body[data-app="admin"] .empty{padding:36px;text-align:center;color:var(--muted)}
+body[data-app="admin"] .bars{display:block;width:100%;height:auto}
+body[data-app="admin"] .bars text{fill:var(--muted);font-size:10px;font-family:inherit}
+body[data-app="admin"] .bars rect{fill:var(--accent)}
+body[data-app="admin"] .meter{height:8px;border-radius:9px;background:var(--line);overflow:hidden}
+body[data-app="admin"] .meter i{display:block;height:100%;background:var(--accent)}
+body[data-app="admin"] .li{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px}
+body[data-app="admin"] .li:last-child{border:0}
+body[data-app="admin"] .msgrow{display:flex;gap:10px;align-items:flex-start;padding:10px 14px;border-bottom:1px solid var(--line)}
+body[data-app="admin"] .msgrow:last-child{border:0}
+body[data-app="admin"] .msgrow .txt{white-space:pre-wrap;overflow-wrap:anywhere}
+body[data-app="admin"] .form2{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:0 18px}
+body[data-app="admin"] .sw{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+body[data-app="admin"] .sw small{display:block;color:var(--muted)}
+body[data-app="admin"] .mobnav{display:none}
+@media(max-width:860px){body[data-app="admin"] .shell{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr)}
+body[data-app="admin"] .nav{flex-direction:row;align-items:center;border-left:0;border-bottom:1px solid var(--line);padding:8px;gap:6px;overflow-x:auto}
+body[data-app="admin"] .nav-brand,body[data-app="admin"] .nav-foot{display:none}
+body[data-app="admin"] .nav-list{flex-direction:row;overflow:visible;flex:none}
+body[data-app="admin"] .nav-list button{white-space:nowrap;padding:8px 12px}
+body[data-app="admin"] .mobnav{display:inline-flex}
+body[data-app="admin"] .grid2{grid-template-columns:minmax(0,1fr)}
+body[data-app="admin"] .view{padding:14px}
+body[data-app="admin"] .top{padding:10px 14px}
+}
+
+
+/* اتصال آنلاین */
+.boot{position:fixed;inset:0;z-index:2000;display:grid;place-items:center;background:var(--bg)}
+.boot-in{text-align:center;display:grid;gap:14px;justify-items:center;padding:20px}
+.boot-logo{display:grid;place-items:center;width:64px;height:64px;border-radius:22px;color:#fff;font-size:32px;font-weight:900;background:linear-gradient(135deg,var(--accent),#bc70ff);box-shadow:0 10px 30px #7c5cff50}
+.boot-bar{width:150px;height:4px;border-radius:9px;background:var(--line);overflow:hidden}
+.boot-bar i{display:block;height:100%;width:40%;border-radius:9px;background:var(--accent2);animation:bootmove 1.1s ease-in-out infinite alternate}
+@keyframes bootmove{from{margin-right:0}to{margin-right:60%}}
+.gk-net{position:fixed;top:0;left:0;right:0;z-index:1200;padding:5px 12px;text-align:center;font-size:12px;font-weight:700;background:var(--warn);color:#1a1204}
+.gk-net.denied{background:var(--danger);color:#fff}
+</style>
+</head>
+<body data-app="chat">
+<div class="boot" id="boot"><div class="boot-in"><div class="boot-logo">گ</div><div id="bootTxt" class="muted">در حال اتصال…</div><div class="boot-bar"><i></i></div></div></div>
+<noscript><p style="padding:20px;text-align:center">برای استفاده از گپ‌خانه باید جاوااسکریپت فعال باشد.</p></noscript>
+<div id="chatRoot">
+
+<!-- ورود و ثبت‌نام -->
+<main class="auth" id="auth">
+  <section class="hero">
+    <div class="brand"><div class="logo" id="authLogo">گ</div><div class="brand-name" id="authBrand">گپ‌خانه</div></div>
+    <h1>اتاق‌هایی برای حرف‌های خوب، بدون شلوغی</h1>
+    <p class="lead">اتاق بساز، به دوستانت پیام خصوصی بده، پیام‌ها را سنجاق و واکنش‌دار کن؛ و همه‌چیز همین‌جا ذخیره می‌ماند.</p>
+    <div class="demo" aria-hidden="true">
+      <div class="b"><small>سارا</small>امشب کسی برای دورهمی آنلاین هست؟</div>
+      <div class="b me">من هستم! اتاق «دورهمی» رو باز کردم 🎉</div>
+      <div class="b"><small>آرمین</small>عالیه، همین الان میام ✨</div>
+    </div>
+  </section>
+
+  <section class="auth-card" aria-label="ورود یا ثبت‌نام">
+    <div class="notice" id="authNotice" hidden></div>
+    <div class="tabs" role="tablist">
+      <button type="button" role="tab" id="tabLogin" aria-selected="true">ورود</button>
+      <button type="button" role="tab" id="tabReg" aria-selected="false">ثبت‌نام</button>
+    </div>
+
+    <form id="loginForm" novalidate>
+      <div class="field"><label class="lbl" for="lu">نام کاربری</label>
+        <input id="lu" autocomplete="username" maxlength="20" required></div>
+      <div class="field"><label class="lbl" for="lp">رمز عبور</label>
+        <div class="pw"><input id="lp" type="password" autocomplete="current-password" maxlength="64" required>
+        <button type="button" class="eye" data-eye="lp" aria-label="نمایش رمز">👁</button></div></div>
+      <label class="check small"><input type="checkbox" id="lr" checked> مرا در این مرورگر به خاطر بسپار</label>
+      <div class="err" id="loginErr" role="alert"></div>
+      <button class="btn primary block" id="loginBtn" type="submit">ورود به گپ‌خانه</button>
+    </form>
+
+    <form id="regForm" novalidate hidden>
+      <div class="field"><label class="lbl" for="ru">نام کاربری</label>
+        <input id="ru" class="ltr" autocomplete="username" maxlength="20" placeholder="sadegh_1" required>
+        <div class="hint">۳ تا ۲۰ نویسه؛ حروف، عدد و _ (برای ورود و منشن کردن)</div></div>
+      <div class="field"><label class="lbl" for="rn">نام نمایشی</label>
+        <input id="rn" autocomplete="nickname" maxlength="20" placeholder="مثلاً صادق" required></div>
+      <div class="field"><label class="lbl">رنگ پروفایل</label><div class="swatches" id="regColors" role="radiogroup"></div></div>
+      <div class="field"><label class="lbl" for="rp">رمز عبور</label>
+        <div class="pw"><input id="rp" type="password" autocomplete="new-password" maxlength="64" required>
+        <button type="button" class="eye" data-eye="rp" aria-label="نمایش رمز">👁</button></div>
+        <div class="meter"><i id="meter"></i></div><div class="hint" id="meterTxt"></div></div>
+      <div class="field"><label class="lbl" for="rp2">تکرار رمز عبور</label>
+        <input id="rp2" type="password" autocomplete="new-password" maxlength="64" required></div>
+      <div class="err" id="regErr" role="alert"></div>
+      <button class="btn primary block" id="regBtn" type="submit">ساخت حساب</button>
+    </form>
+
+    <div class="auth-foot"><span id="authFoot"></span></div>
+  </section>
+</main>
+
+<!-- برنامه -->
+<div class="app" id="app" hidden>
+  <aside class="sidebar" id="sidebar" aria-label="فهرست اتاق‌ها">
+    <div class="side-head">
+      <div class="me">
+        <span id="meAv"></span>
+        <div class="grow"><div class="ellipsis" style="font-weight:900" id="meName"></div><div class="tiny muted ellipsis ltr" id="meUser"></div></div>
+        <button class="btn ghost icon-btn" id="settingsBtn" aria-label="تنظیمات حساب">⚙️</button>
+      </div>
+    </div>
+    <div class="side-search"><input id="roomFilter" placeholder="جستجوی اتاق یا کاربر…" aria-label="جستجوی اتاق یا کاربر"></div>
+    <div class="side-scroll" id="sideScroll">
+      <div class="sec"><span>اتاق‌ها</span><button class="btn sm ghost" id="newRoomBtn">＋ اتاق جدید</button></div>
+      <div id="roomList"></div>
+      <div class="sec"><span>پیام‌های خصوصی</span></div>
+      <div id="dmList"></div>
+      <div class="sec"><span>اعضا</span><span id="memberCount"></span></div>
+      <div id="memberList"></div>
+    </div>
+    <div class="side-foot">
+      <a class="btn wide" id="adminLink" href="#admin" hidden>🛡️ پنل مدیریت</a>
+      <button class="btn" id="themeBtn">🌙 پوسته</button>
+      <button class="btn danger" id="logoutBtn">↩ خروج</button>
+    </div>
+  </aside>
+  <div class="scrim" id="scrim"></div>
+
+  <section class="chat">
+    <header class="topbar">
+      <button class="btn ghost icon-btn mobile-only" id="menuBtn" aria-label="باز کردن فهرست">☰</button>
+      <span id="hIcon"></span>
+      <div class="grow"><h2 class="ellipsis" id="hTitle"></h2><div class="tiny muted ellipsis" id="hSub"></div></div>
+      <button class="btn ghost icon-btn" id="searchBtn" aria-label="جستجو در پیام‌ها">🔎</button>
+      <button class="btn ghost icon-btn" id="infoBtn" aria-label="اطلاعات اتاق">ⓘ</button>
+    </header>
+    <div class="pin" id="pinBar" hidden><span>📌</span><span class="grow ellipsis" id="pinText"></span><button class="btn sm ghost" id="unpinBtn" hidden>برداشتن</button></div>
+    <div class="searchbar" id="searchWrap" hidden><input id="searchInput" placeholder="جستجو در پیام‌های این اتاق…" aria-label="جستجو در پیام‌ها"><div class="hint" id="searchCount"></div></div>
+    <div class="messages" id="messages" aria-live="polite"><div class="feed" id="feed"></div></div>
+    <button class="down" id="downBtn" aria-label="رفتن به آخرین پیام" hidden>↓</button>
+
+    <div class="composer">
+      <div class="composer-in">
+        <div class="bar" id="bar" hidden><span id="barText"></span><button class="btn sm" id="barCancel" type="button">لغو</button></div>
+        <div class="emoji" id="emoji" hidden></div>
+        <div class="blocked" id="blocked" hidden></div>
+        <div class="box" id="box">
+          <button class="tool" id="emojiBtn" type="button" aria-label="ایموجی">😊</button>
+          <textarea id="msg" rows="1" placeholder="پیامت رو بنویس…" aria-label="متن پیام"></textarea>
+          <button class="send" id="sendBtn" type="button" aria-label="ارسال" disabled>➤</button>
+        </div>
+        <div class="chint"><span id="hintL">Enter برای ارسال · Shift+Enter برای خط جدید</span><span id="count"></span></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+</div>
+<div id="adminRoot" hidden>
+
+<!-- ورود مدیر / راه‌اندازی اولیه -->
+<main class="gate" id="gate" hidden>
+  <div class="gate-card">
+    <div class="shield">🛡️</div>
+    <h1 id="gateTitle">ورود مدیر</h1>
+    <p class="muted" id="gateDesc" style="margin:0 0 20px">فقط حساب‌های مدیر می‌توانند وارد پنل شوند.</p>
+    <form id="gateForm" novalidate>
+      <div class="field"><label class="lbl" for="gu">نام کاربری</label><input id="gu" class="ltr" autocomplete="username" maxlength="20"></div>
+      <div class="field" id="gnWrap" hidden><label class="lbl" for="gn">نام نمایشی</label><input id="gn" maxlength="20" value="مدیر"></div>
+      <div class="field"><label class="lbl" for="gp">رمز عبور</label><input id="gp" type="password" autocomplete="current-password" maxlength="64"></div>
+      <div class="field" id="gp2Wrap" hidden><label class="lbl" for="gp2">تکرار رمز عبور</label><input id="gp2" type="password" autocomplete="new-password" maxlength="64"></div>
+      <div class="err" id="gateErr" role="alert"></div>
+      <button class="btn primary block" id="gateBtn" type="submit">ورود به پنل</button>
+    </form>
+    <p class="small muted" style="margin:16px 0 0"><a href="#">← بازگشت به گپ‌خانه</a></p>
+  </div>
+</main>
+
+<!-- پنل -->
+<div class="shell" id="shell" hidden>
+  <nav class="nav" aria-label="منوی مدیریت">
+    <div class="nav-brand"><div class="shield">🛡️</div><span id="navSite">پنل مدیریت</span></div>
+    <div class="nav-list" id="navList"></div>
+    <div class="nav-foot">
+      <a class="btn" href="#">💬 رفتن به گپ‌خانه</a>
+      <button class="btn" id="aThemeBtn">☀️ پوسته</button>
+      <button class="btn danger" id="aLogoutBtn">↩ خروج از پنل</button>
+    </div>
+  </nav>
+  <section class="main">
+    <header class="top"><h1 id="pageTitle"></h1><span class="muted small" id="whoami"></span>
+      <button class="btn sm mobnav" id="aLogoutBtn2">خروج</button></header>
+    <div class="view" id="view"><div class="wrapc" id="content"></div></div>
+  </section>
+</div>
+
+</div>
+<script>
+'use strict';
+/* گپ‌خانه — هسته‌ی مشترک: ذخیره‌سازی، احراز هویت، اتاق‌ها، پیام‌ها، مدیریت و ابزار رابط */
+window.GK = (() => {
+  const P = 'gk2:';
+  const NAME_RE = /^[A-Za-z0-9_\u0600-\u06FF]{3,20}$/;
+  const COLORS = ['#7c5cff', '#089e8d', '#ed6598', '#e99b36', '#3988ef', '#e5534b', '#7cb342', '#00a8cc'];
+  const MAX_MSGS_PER_ROOM = 3000;
+  const mem = Object.create(null);
+
+  /* ---------- ذخیره‌سازی (محلی + همگام‌سازی آنلاین) ---------- */
+  const CLOUD = String(window.GAPKHANE_DB_URL || '').trim().replace(/\/+$/, '');
+  const ROOT = 'gapkhane';
+  const LOCAL_ONLY = /^(session|attempts|lastsend|theme|prefs:|__)/;
+  let skew = 0;
+  function probe(s) {
+    try { const k = P + '__t'; s.setItem(k, '1'); s.removeItem(k); return s; } catch { return null; }
+  }
+  let store = null, sess = null;
+  try { store = probe(window.localStorage); } catch {}
+  try { sess = probe(window.sessionStorage); } catch {}
+  const persistent = CLOUD ? true : !!store;
+  const useMem = k => !store || (!!CLOUD && !LOCAL_ONLY.test(k));
+
+  const hs = new Set();
+  function onChange(fn) { hs.add(fn); return () => hs.delete(fn); }
+  window.addEventListener('storage', e => {
+    if (store && e.storageArea !== store) return;
+    if (e.key === null) { hs.forEach(f => f('*')); return; }
+    if (!e.key.startsWith(P)) return;
+    const k = e.key.slice(P.length);
+    hs.forEach(f => { try { f(k); } catch (err) { console.error(err); } });
+  });
+
+  const errHandlers = new Set();
+  function onError(fn) { errHandlers.add(fn); }
+  function rawGet(key) { return useMem(key) ? (key in mem ? mem[key] : null) : store.getItem(P + key); }
+  function get(key, def) {
+    try { const v = rawGet(key); return v == null ? def : JSON.parse(v); } catch { return def; }
+  }
+  function set(key, val) {
+    const s = JSON.stringify(val);
+    const sync = CLOUD && !LOCAL_ONLY.test(key);
+    const old = sync ? get(key, undefined) : undefined;
+    try {
+      if (useMem(key)) mem[key] = s; else store.setItem(P + key, s);
+    } catch (e) {
+      errHandlers.forEach(f => f(e)); return false;
+    }
+    if (sync) pushOps(opsFor(key, old, val));
+    return true;
+  }
+  function del(key) {
+    const sync = CLOUD && !LOCAL_ONLY.test(key);
+    try { if (useMem(key)) delete mem[key]; else store.removeItem(P + key); } catch {}
+    if (sync) pushOps(delOps(key));
+  }
+  function allKeys() {
+    const out = new Set(Object.keys(mem));
+    if (store) { for (let i = 0; i < store.length; i++) { const k = store.key(i); if (k && k.startsWith(P)) out.add(k.slice(P.length)); } }
+    return [...out];
+  }
+  function usedBytes() {
+    let n = 0;
+    allKeys().forEach(k => { n += (rawGet(k) || '').length * 2; });
+    return n;
+  }
+
+  /* ---------- همگام‌سازی آنلاین (Firebase Realtime Database با REST + SSE) ----------
+     هر کاربر، اتاق، پیام و گزارش یک گره‌ی جدا دارد؛ پس دو نفری که هم‌زمان پیام می‌فرستند
+     روی هم نمی‌نویسند. تغییرات از طریق جریان زنده (SSE) بدون بارگذاری مجدد می‌رسند. */
+  let tree = {}, synced = false, outbox = [], es = null, status = 'connecting', lastEvt = 0;
+  let flushing = false, retry = 0, retryT = 0, rcT = 0, rcN = 0, netEl = null;
+  let readyRes; const ready = new Promise(r => { readyRes = r; });
+  if (!CLOUD) readyRes();
+  const statusFns = new Set();
+  function onStatus(fn) { statusFns.add(fn); try { fn(status); } catch {} return () => statusFns.delete(fn); }
+  function setStatus(s) {
+    if (s === status) return;
+    status = s; statusFns.forEach(f => { try { f(s); } catch {} }); paintNet();
+  }
+  function paintNet() {
+    if (!CLOUD || !synced) return;
+    if (!netEl) { netEl = document.createElement('div'); netEl.className = 'gk-net'; netEl.setAttribute('role', 'status'); document.body.append(netEl); }
+    netEl.hidden = status === 'online';
+    netEl.className = 'gk-net' + (status === 'denied' ? ' denied' : '');
+    netEl.textContent = status === 'denied' ? 'دسترسی به پایگاه‌داده رد شد؛ قوانین Firebase را بررسی کن.' : 'اتصال قطع است؛ در حال تلاش دوباره… پیام‌ها پس از اتصال ارسال می‌شوند.';
+  }
+
+  function hashStr(s) { let h = 5381; for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0; return (h >>> 0).toString(36); }
+  const safeSeg = s => String(s).replace(/[.$#\[\]\/\u0000-\u001f\u007f]/g, '_').slice(0, 200);
+  const itemId = it => safeSeg(it && it.id ? it.id : 'x' + hashStr(JSON.stringify(it)));
+  function collPath(key) {
+    if (/^(users|rooms|reports|logs)$/.test(key)) return key;
+    if (key.startsWith('msgs:')) return 'msgs/' + safeSeg(key.slice(5));
+    return null;
+  }
+  function opsFor(key, oldV, newV) {
+    const cp = collPath(key);
+    if (cp) {
+      const oa = Array.isArray(oldV) ? oldV : [], na = Array.isArray(newV) ? newV : [];
+      if (!na.length) return oa.length ? [[cp, null]] : [];
+      const o = new Map(oa.map(it => [itemId(it), JSON.stringify(it)])), seen = new Set(), ops = [];
+      na.forEach(it => { const id = itemId(it), j = JSON.stringify(it); seen.add(id); if (o.get(id) !== j) ops.push([cp + '/' + id, j]); });
+      o.forEach((_, id) => { if (!seen.has(id)) ops.push([cp + '/' + id, null]); });
+      return ops;
+    }
+    if (key === 'presence') {
+      const o = oldV || {}, n = newV || {}, ops = [];
+      for (const k in n) if (o[k] !== n[k]) ops.push(['presence/' + safeSeg(k), n[k]]);
+      for (const k in o) if (!(k in n)) ops.push(['presence/' + safeSeg(k), null]);
+      return ops;
+    }
+    if (key.startsWith('read:')) return [['read/' + safeSeg(key.slice(5)), JSON.stringify(newV)]];
+    return [['kv/' + safeSeg(key), JSON.stringify(newV)]];
+  }
+  function delOps(key) {
+    const cp = collPath(key); if (cp) return [[cp, null]];
+    if (key === 'presence') return [['presence', null]];
+    if (key.startsWith('read:')) return [['read/' + safeSeg(key.slice(5)), null]];
+    return [['kv/' + safeSeg(key), null]];
+  }
+
+  function setPath(root, path, val) {
+    const seg = path.split('/').filter(Boolean);
+    if (!seg.length) return (val && typeof val === 'object') ? val : {};
+    const stack = [root]; let o = root;
+    for (let i = 0; i < seg.length - 1; i++) {
+      let nx = o[seg[i]];
+      if (nx == null || typeof nx !== 'object') { if (val == null) return root; nx = o[seg[i]] = {}; }
+      o = nx; stack.push(o);
+    }
+    const last = seg[seg.length - 1];
+    if (val == null) {
+      delete o[last];
+      for (let i = stack.length - 1; i > 0; i--) { if (Object.keys(stack[i]).length) break; delete stack[i - 1][seg[i - 1]]; }
+    } else o[last] = val;
+    return root;
+  }
+
+  const pc = new Map();
+  function pj(s) {
+    let v = pc.get(s);
+    if (v === undefined) { try { v = JSON.parse(s); } catch { v = null; } if (pc.size > 30000) pc.clear(); pc.set(s, v); }
+    return v;
+  }
+  const nodeArr = (node, cmp) => Object.values(node || {}).map(x => (typeof x === 'string' ? pj(x) : null)).filter(Boolean).sort(cmp);
+  const byId = (a, b) => String(a.id).localeCompare(String(b.id));
+  function fromTree(key) {
+    if (key === 'users' || key === 'rooms') return tree[key] ? nodeArr(tree[key], (a, b) => (a.createdAt || 0) - (b.createdAt || 0) || byId(a, b)) : undefined;
+    if (key === 'reports') return tree.reports ? nodeArr(tree.reports, (a, b) => (b.time || 0) - (a.time || 0) || byId(a, b)) : undefined;
+    if (key === 'logs') return tree.logs ? nodeArr(tree.logs, (a, b) => (b.t || 0) - (a.t || 0) || byId(a, b)) : undefined;
+    if (key === 'presence') return tree.presence ? { ...tree.presence } : undefined;
+    if (key.startsWith('msgs:')) { const n = tree.msgs && tree.msgs[key.slice(5)]; return n ? nodeArr(n, (a, b) => (a.time || 0) - (b.time || 0) || byId(a, b)) : undefined; }
+    if (key.startsWith('read:')) { const s = tree.read && tree.read[key.slice(5)]; return typeof s === 'string' ? pj(s) : undefined; }
+    const s = tree.kv && tree.kv[key]; return typeof s === 'string' ? pj(s) : undefined;
+  }
+  function allSyncedKeys() {
+    const ks = new Set(['users', 'rooms', 'reports', 'logs', 'presence', 'settings', 'seeded']);
+    Object.keys(tree.msgs || {}).forEach(r => ks.add('msgs:' + r));
+    Object.keys(tree.read || {}).forEach(u => ks.add('read:' + u));
+    Object.keys(tree.kv || {}).forEach(k => ks.add(k));
+    Object.keys(mem).forEach(k => { if (!LOCAL_ONLY.test(k)) ks.add(k); });
+    return [...ks];
+  }
+  function keysForPath(path) {
+    const s = path.split('/').filter(Boolean);
+    if (!s.length) return allSyncedKeys();
+    switch (s[0]) {
+      case 'users': case 'rooms': case 'reports': case 'logs': case 'presence': return [s[0]];
+      case 'msgs': return s[1] ? ['msgs:' + s[1]] : allSyncedKeys().filter(k => k.startsWith('msgs:'));
+      case 'read': return s[1] ? ['read:' + s[1]] : allSyncedKeys().filter(k => k.startsWith('read:'));
+      case 'kv': return s[1] ? [s[1]] : allSyncedKeys().filter(k => !/^(users|rooms|reports|logs|presence|msgs:|read:)/.test(k));
+      default: return [];
+    }
+  }
+  function applyKey(key) {
+    const v = fromTree(key);
+    const raw = v === undefined ? null : JSON.stringify(v);
+    const cur = key in mem ? mem[key] : null;
+    if (raw === cur) return false;
+    if (raw === null) delete mem[key]; else mem[key] = raw;
+    if (key.startsWith('msgs:')) cache.delete(key.slice(5));
+    return true;
+  }
+
+  function onEvt(type, e) {
+    lastEvt = Date.now(); rcN = 0;
+    let m; try { m = JSON.parse(e.data); } catch { return; }
+    if (!m || typeof m.path !== 'string') return;
+    const paths = [];
+    if (type === 'put') { tree = setPath(tree, m.path, m.data); paths.push(m.path); }
+    else {
+      const base = m.path === '/' ? '' : m.path;
+      for (const k in (m.data || {})) { tree = setPath(tree, base + '/' + k, m.data[k]); paths.push(base + '/' + k); }
+    }
+    for (const [p, v] of outbox) tree = setPath(tree, p, v);
+    const keys = new Set(); paths.forEach(p => keysForPath(p).forEach(k => keys.add(k)));
+    const changed = [...keys].filter(applyKey);
+    const first = !synced && type === 'put' && m.path === '/';
+    if (first) { synced = true; migrateLegacy(); seed(); syncClock(); readyRes(); }
+    if (synced) { setStatus('online'); paintNet(); }
+    if (outbox.length) flush();
+    changed.forEach(k => hs.forEach(f => { try { f(k); } catch (err) { console.error(err); } }));
+  }
+
+  function migrateLegacy() {
+    if (!store || tree.users || tree.rooms) return;
+    const keys = [];
+    for (let i = 0; i < store.length; i++) { const k = store.key(i); if (k && k.startsWith(P) && !LOCAL_ONLY.test(k.slice(P.length))) keys.push(k.slice(P.length)); }
+    if (!keys.includes('users')) return;
+    keys.forEach(k => { try { set(k, JSON.parse(store.getItem(P + k))); } catch {} });
+    keys.forEach(k => { try { store.removeItem(P + k); } catch {} });
+  }
+  async function syncClock() {
+    try {
+      const t0 = Date.now();
+      const r = await fetch(`${CLOUD}/${ROOT}/ping.json`, { method: 'PUT', body: JSON.stringify({ '.sv': 'timestamp' }) });
+      const t1 = Date.now(), ts = await r.json();
+      if (typeof ts === 'number') skew = Math.round(ts - (t0 + t1) / 2);
+    } catch {}
+  }
+  async function checkDenied() {
+    try { const r = await fetch(`${CLOUD}/${ROOT}.json?shallow=true`, { cache: 'no-store' }); if (r.status === 401 || r.status === 403) setStatus('denied'); } catch {}
+  }
+  function scheduleReconnect() { clearTimeout(rcT); rcT = setTimeout(connect, Math.min(15000, 1000 * 2 ** rcN++)); }
+  function connect() {
+    try { es && es.close(); } catch {}
+    lastEvt = Date.now();
+    if (status !== 'denied') setStatus(synced ? 'offline' : 'connecting');
+    try { es = new EventSource(`${CLOUD}/${ROOT}.json`); } catch (e) { console.error(e); scheduleReconnect(); return; }
+    es.addEventListener('put', e => onEvt('put', e));
+    es.addEventListener('patch', e => onEvt('patch', e));
+    es.addEventListener('keep-alive', () => { lastEvt = Date.now(); });
+    es.addEventListener('cancel', () => setStatus('denied'));
+    es.addEventListener('auth_revoked', () => setStatus('denied'));
+    es.onopen = () => { lastEvt = Date.now(); };
+    es.onerror = () => {
+      if (status === 'online' || status === 'connecting') setStatus(synced ? 'offline' : 'connecting');
+      checkDenied();
+      if (es.readyState === 2) scheduleReconnect();
+    };
+  }
+
+  function persistOutbox() {
+    try { if (store) { if (outbox.length) store.setItem(P + '__outbox', JSON.stringify(outbox)); else store.removeItem(P + '__outbox'); } } catch {}
+  }
+  function pushOps(ops) {
+    if (!ops.length) return;
+    for (const [p, v] of ops) {
+      tree = setPath(tree, p, v);
+      outbox = outbox.filter(e => !(e[0] === p || e[0].startsWith(p + '/')));
+      outbox.push([p, v]);
+    }
+    persistOutbox(); flush();
+  }
+  async function flush() {
+    if (flushing || !outbox.length || !CLOUD || !synced) return;
+    flushing = true;
+    try {
+      while (outbox.length) {
+        const batch = [], used = [];
+        for (const e of outbox) {
+          if (used.some(q => q === e[0] || q.startsWith(e[0] + '/') || e[0].startsWith(q + '/'))) break;
+          used.push(e[0]); batch.push(e);
+        }
+        const body = {}; batch.forEach(([p, v]) => { body[p] = v; });
+        const r = await fetch(`${CLOUD}/${ROOT}.json?print=silent`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+        if (r.status === 401 || r.status === 403) { setStatus('denied'); throw new Error('HTTP ' + r.status); }
+        if (!r.ok && r.status !== 400) throw new Error('HTTP ' + r.status);
+        outbox = outbox.filter(e => !batch.includes(e));
+        persistOutbox(); retry = 0;
+      }
+    } catch (e) {
+      retry++; clearTimeout(retryT); retryT = setTimeout(flush, Math.min(15000, 1000 * 2 ** retry));
+    }
+    flushing = false;
+  }
+  function startCloud() {
+    if (!CLOUD) { console.warn('[گپ‌خانه] آدرس پایگاه‌داده تنظیم نشده؛ فقط حالت محلی (بدون آنلاین) فعال است.'); return; }
+    try { const o = store && store.getItem(P + '__outbox'); if (o) { const a = JSON.parse(o); if (Array.isArray(a)) outbox = a; } } catch { outbox = []; }
+    window.addEventListener('online', () => { retry = 0; rcN = 0; connect(); flush(); });
+    document.addEventListener('visibilitychange', () => { if (!document.hidden && (!es || es.readyState !== 1)) { rcN = 0; connect(); } });
+    setInterval(() => { if (Date.now() - lastEvt > 75000) connect(); }, 15000);
+    connect();
+  }
+
+  /* ---------- ابزارها ---------- */
+  const now = () => Date.now() + skew;
+  function uid() {
+    try { if (crypto && crypto.randomUUID) return crypto.randomUUID().replace(/-/g, '').slice(0, 20); } catch {}
+    return now().toString(36) + Math.random().toString(36).slice(2, 10);
+  }
+  const esc = v => String(v == null ? '' : v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+  const fa = n => Number(n || 0).toLocaleString('fa-IR');
+  const normName = s => String(s || '').trim().normalize('NFKC').toLowerCase();
+  const clean = s => String(s || '').replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f\u200e\u200f\u202a-\u202e]/g, '').trim();
+  const timeText = t => new Date(t).toLocaleTimeString('fa-IR', { hour: '2-digit', minute: '2-digit' });
+  const dayText = t => new Date(t).toLocaleDateString('fa-IR', { weekday: 'long', day: 'numeric', month: 'long' });
+  const dateText = t => new Date(t).toLocaleDateString('fa-IR', { year: 'numeric', month: 'long', day: 'numeric' });
+  const dateTime = t => dateText(t) + ' ' + timeText(t);
+  function ago(t) {
+    if (!t) return 'هیچ‌وقت';
+    const d = now() - t;
+    if (d < 45e3) return 'همین الان';
+    if (d < 36e5) return fa(Math.floor(d / 6e4)) + ' دقیقه پیش';
+    if (d < 864e5) return fa(Math.floor(d / 36e5)) + ' ساعت پیش';
+    if (d < 7 * 864e5) return fa(Math.floor(d / 864e5)) + ' روز پیش';
+    return dateText(t);
+  }
+  const safeColor = c => (/^#[0-9a-f]{6}$/i.test(c || '') ? c : COLORS[0]);
+  const clamp = (n, a, b) => Math.min(b, Math.max(a, n));
+  function debounce(fn, ms) { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; }
+  function download(name, text, type = 'application/json') {
+    const url = URL.createObjectURL(new Blob([text], { type: type + ';charset=utf-8' }));
+    const a = document.createElement('a');
+    a.href = url; a.download = name; document.body.append(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1500);
+  }
+  const ok = (extra = {}) => ({ ok: true, ...extra });
+  const fail = error => ({ ok: false, error });
+
+  /* ---------- تنظیمات ---------- */
+  const DEFAULTS = {
+    siteName: 'گپ‌خانه', registrationOpen: true, maxLen: 700, slowMode: 0, bannedWords: [],
+    welcome: 'به گپ‌خانه خوش آمدی! لطفاً مودب باش و به دیگران احترام بگذار.',
+    allowRoomCreate: true, allowDM: true, allowEdit: true, minPass: 6,
+    maintenance: false, maintenanceMsg: 'سایت موقتاً در دست تعمیر است. کمی بعد برگرد.'
+  };
+  const settings = () => ({ ...DEFAULTS, ...get('settings', {}) });
+  function saveSettings(patch) { set('settings', { ...get('settings', {}), ...patch }); }
+
+  /* ---------- کاربران ---------- */
+  const users = () => get('users', []);
+  const saveUsers = a => set('users', a);
+  const userById = id => users().find(u => u.id === id) || null;
+  const userByName = n => { const k = normName(n); return users().find(u => normName(u.username) === k) || null; };
+  const isMod = u => !!u && (u.role === 'mod' || u.role === 'admin');
+  const isAdmin = u => !!u && u.role === 'admin';
+  const roleLabel = r => ({ admin: 'مدیر', mod: 'ناظر', user: 'کاربر' })[r] || 'کاربر';
+  function updateUser(id, patch) {
+    const a = users(); const i = a.findIndex(u => u.id === id);
+    if (i < 0) return false;
+    a[i] = { ...a[i], ...patch }; saveUsers(a); return true;
+  }
+
+  /* ---------- رمز عبور ---------- */
+  const hex = b => [...b].map(x => x.toString(16).padStart(2, '0')).join('');
+  function fallbackHash(str) {
+    let h1 = 0xdeadbeef, h2 = 0x41c6ce57;
+    for (let r = 0; r < 2000; r++) {
+      for (let i = 0; i < str.length; i++) {
+        const c = str.charCodeAt(i);
+        h1 = Math.imul(h1 ^ c, 2654435761); h2 = Math.imul(h2 ^ c, 1597334677);
+      }
+      h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+      h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+    }
+    return (h2 >>> 0).toString(16).padStart(8, '0') + (h1 >>> 0).toString(16).padStart(8, '0');
+  }
+  async function hashPass(pass, salt, forceAlgo) {
+    if (forceAlgo !== 'f1' && window.crypto && crypto.subtle) {
+      try {
+        const enc = new TextEncoder();
+        const key = await crypto.subtle.importKey('raw', enc.encode(pass), 'PBKDF2', false, ['deriveBits']);
+        const bits = await crypto.subtle.deriveBits({ name: 'PBKDF2', salt: enc.encode(salt), iterations: 120000, hash: 'SHA-256' }, key, 256);
+        return 'p1:' + hex(new Uint8Array(bits));
+      } catch {}
+    }
+    return 'f1:' + fallbackHash(salt + ':' + pass);
+  }
+  async function verifyPass(pass, u) {
+    const algo = String(u.passHash || '').slice(0, 2);
+    const h = await hashPass(pass, u.salt, algo === 'f1' ? 'f1' : undefined);
+    return h === u.passHash;
+  }
+
+  /* ---------- لاگ ---------- */
+  function log(action, detail = '', actorId = null) {
+    const a = get('logs', []);
+    const actor = actorId ? userById(actorId) : null;
+    a.unshift({ id: 'l_' + uid(), t: now(), actor: actor ? actor.name : 'سیستم', actorId, action, detail });
+    set('logs', a.slice(0, 600));
+  }
+
+  /* ---------- نشست ---------- */
+  function sessionData() {
+    try { if (sess) { const s = sess.getItem(P + 'session'); if (s) return JSON.parse(s); } } catch {}
+    return get('session', null);
+  }
+  function setSession(userId, remember) {
+    clearSession();
+    if (remember || !sess) set('session', { userId, t: now() });
+    else sess.setItem(P + 'session', JSON.stringify({ userId, t: now() }));
+  }
+  function clearSession() { try { sess && sess.removeItem(P + 'session'); } catch {} del('session'); }
+  function sessionState() {
+    const s = sessionData();
+    if (!s) return { user: null, reason: null };
+    const u = userById(s.userId);
+    if (!u) return { user: null, reason: 'deleted' };
+    if (u.status === 'banned') return { user: null, reason: 'banned', detail: u.banReason || '' };
+    if (settings().maintenance && u.role !== 'admin') return { user: null, reason: 'maintenance' };
+    return { user: u, reason: null };
+  }
+  function adminState() {
+    try {
+      const raw = sess ? sess.getItem(P + 'admin') : mem.__admin;
+      if (!raw) return null;
+      const s = JSON.parse(raw);
+      if (!s || s.exp < now()) return null;
+      const u = userById(s.userId);
+      return u && u.role === 'admin' && u.status !== 'banned' ? u : null;
+    } catch { return null; }
+  }
+  function setAdminSession(userId) {
+    const v = JSON.stringify({ userId, exp: now() + 8 * 36e5 });
+    if (sess) sess.setItem(P + 'admin', v); else mem.__admin = v;
+  }
+  function clearAdminSession() { try { sess && sess.removeItem(P + 'admin'); } catch {} delete mem.__admin; }
+
+  /* ---------- محدودیت تلاش ---------- */
+  function lockLeft(key) {
+    const a = get('attempts', {})[key];
+    return a && a.until && a.until > now() ? Math.ceil((a.until - now()) / 1000) : 0;
+  }
+  function failAttempt(key) {
+    const all = get('attempts', {}); const a = all[key] || { n: 0 };
+    a.n += 1;
+    if (a.n >= 5) a.until = now() + Math.min(600, (a.n - 4) * 60) * 1000;
+    all[key] = a; set('attempts', all);
+  }
+  function clearAttempts(key) { const all = get('attempts', {}); delete all[key]; set('attempts', all); }
+
+  /* ---------- ثبت‌نام و ورود ---------- */
+  function validatePass(p) {
+    const min = settings().minPass;
+    if (String(p).length < min) return `رمز عبور باید دست‌کم ${fa(min)} نویسه باشد.`;
+    if (String(p).length > 64) return 'رمز عبور نباید بیش از ۶۴ نویسه باشد.';
+    return '';
+  }
+  function hasBanned(text) {
+    const t = String(text).toLowerCase();
+    return settings().bannedWords.some(w => w.trim() && t.includes(w.trim().toLowerCase()));
+  }
+  async function createUser(d, { role = 'user', bypassClosed = false } = {}) {
+    const st = settings();
+    if (!st.registrationOpen && !bypassClosed) return fail('ثبت‌نام فعلاً بسته است.');
+    const username = clean(d.username);
+    const name = clean(d.name).replace(/\s+/g, ' ');
+    const password = String(d.password || '');
+    if (!NAME_RE.test(username)) return fail('نام کاربری باید ۳ تا ۲۰ نویسه و فقط شامل حروف، عدد و _ باشد.');
+    if (userByName(username)) return fail('این نام کاربری قبلاً گرفته شده است.');
+    const nl = [...name].length;
+    if (nl < 2 || nl > 20) return fail('نام نمایشی باید بین ۲ تا ۲۰ نویسه باشد.');
+    if (!bypassClosed && (hasBanned(name) || hasBanned(username))) return fail('این نام مجاز نیست.');
+    const pe = validatePass(password); if (pe) return fail(pe);
+    const salt = uid();
+    const passHash = await hashPass(password, salt);
+    if (userByName(username)) return fail('این نام کاربری قبلاً گرفته شده است.');
+    const u = {
+      id: 'u_' + uid(), username, name, color: safeColor(d.color), bio: '', role, status: 'active',
+      muted: false, salt, passHash, createdAt: now(), lastSeen: now()
+    };
+    const a = users(); a.push(u); saveUsers(a);
+    const rs = {}; rooms().forEach(r => { rs[r.id] = now(); }); set('read:' + u.id, rs);
+    log('register', `کاربر «${u.name}» (@${u.username}) ساخته شد.`, u.id);
+    return ok({ user: u });
+  }
+  const register = d => createUser(d);
+
+  async function login(username, password, { remember = true, adminOnly = false } = {}) {
+    const key = (adminOnly ? 'a:' : 'u:') + normName(username);
+    const wait = lockLeft(key);
+    if (wait) return fail(`تلاش ناموفق زیاد بود. ${fa(wait)} ثانیه دیگر دوباره امتحان کن.`);
+    const u = userByName(username);
+    let good = false;
+    if (u) good = await verifyPass(password, u); else await hashPass(password, 'x');
+    if (!u || !good || (adminOnly && u.role !== 'admin')) {
+      failAttempt(key);
+      return fail('نام کاربری یا رمز عبور درست نیست.');
+    }
+    if (u.status === 'banned') return fail('حساب شما مسدود شده است.' + (u.banReason ? ' دلیل: ' + u.banReason : ''));
+    if (settings().maintenance && u.role !== 'admin') return fail(settings().maintenanceMsg);
+    clearAttempts(key);
+    updateUser(u.id, { lastSeen: now() });
+    log(adminOnly ? 'admin-login' : 'login', `ورود @${u.username}`, u.id);
+    if (adminOnly) setAdminSession(u.id); else setSession(u.id, remember);
+    return ok({ user: u });
+  }
+  async function changePassword(userId, current, next) {
+    const u = userById(userId); if (!u) return fail('کاربر پیدا نشد.');
+    if (!(await verifyPass(current, u))) return fail('رمز فعلی درست نیست.');
+    const pe = validatePass(next); if (pe) return fail(pe);
+    const salt = uid(); updateUser(userId, { salt, passHash: await hashPass(next, salt) });
+    log('password', 'رمز عبور تغییر کرد.', userId);
+    return ok();
+  }
+  async function setPassword(userId, next) {
+    const pe = validatePass(next); if (pe) return fail(pe);
+    const salt = uid();
+    return updateUser(userId, { salt, passHash: await hashPass(next, salt) }) ? ok() : fail('کاربر پیدا نشد.');
+  }
+  function randomPassword(n = 10) {
+    const chars = 'abcdefghjkmnpqrstuvwxyzABCDEFGHJKMNPQRSTUVWXYZ23456789';
+    let out = '';
+    const buf = new Uint32Array(n);
+    try { crypto.getRandomValues(buf); } catch { for (let i = 0; i < n; i++) buf[i] = Math.random() * 4e9; }
+    for (let i = 0; i < n; i++) out += chars[buf[i] % chars.length];
+    return out;
+  }
+  function deleteUser(id, { purge = false, by = null } = {}) {
+    const u = userById(id); if (!u) return false;
+    saveUsers(users().filter(x => x.id !== id));
+    rooms().filter(r => r.type === 'dm' && r.members.includes(id)).forEach(r => deleteRoom(r.id, null, true));
+    if (purge) rooms().forEach(r => {
+      const a = msgsFresh(r.id); const b = a.filter(m => m.userId !== id);
+      if (b.length !== a.length) saveMsgs(r.id, b);
+    });
+    del('read:' + id); del('prefs:' + id);
+    const pr = get('presence', {}); delete pr[id]; set('presence', pr);
+    log('delete-user', `حساب «${u.name}» (@${u.username}) حذف شد${purge ? ' (همراه پیام‌ها)' : ''}.`, by);
+    return true;
+  }
+
+  /* ---------- حضور ---------- */
+  function heartbeat(userId) {
+    const p = get('presence', {}); const t = now();
+    for (const k in p) if (t - p[k] > 30 * 864e5) delete p[k];
+    p[userId] = t; set('presence', p);
+  }
+  const lastSeen = u => Math.max(u.lastSeen || 0, get('presence', {})[u.id] || 0);
+  const isOnline = id => now() - (get('presence', {})[id] || 0) < 45e3;
+  const onlineCount = () => { const p = get('presence', {}); return users().filter(u => now() - (p[u.id] || 0) < 45e3).length; };
+
+  /* ---------- اتاق‌ها ---------- */
+  const rooms = () => get('rooms', []);
+  const saveRooms = a => set('rooms', a);
+  const roomById = id => rooms().find(r => r.id === id) || null;
+  function roomsFor(user) {
+    return rooms().filter(r => r.type === 'dm' ? (user && r.members.includes(user.id)) : true)
+      .sort((a, b) => (a.type === 'dm') - (b.type === 'dm') || a.createdAt - b.createdAt);
+  }
+  function roomTitle(r, viewerId) {
+    if (r.type !== 'dm') return r.name;
+    const o = userById(r.members.find(x => x !== viewerId));
+    return o ? o.name : 'کاربر حذف‌شده';
+  }
+  function createRoom({ name, desc = '', icon = '💬', by = null }) {
+    name = clean(name).replace(/\s+/g, ' ');
+    const l = [...name].length;
+    if (l < 3 || l > 30) return fail('نام اتاق باید بین ۳ تا ۳۰ نویسه باشد.');
+    if (rooms().some(r => r.type !== 'dm' && normName(r.name) === normName(name))) return fail('اتاقی با این نام وجود دارد.');
+    const r = { id: 'r_' + uid(), type: 'room', name, desc: clean(desc).slice(0, 140), icon: clean(icon).slice(0, 4) || '💬', createdBy: by, createdAt: now(), locked: false, pinned: null };
+    const a = rooms(); a.push(r); saveRooms(a);
+    log('room-create', `اتاق «${name}» ساخته شد.`, by);
+    return ok({ room: r });
+  }
+  function updateRoom(id, patch, by) {
+    const a = rooms(); const i = a.findIndex(r => r.id === id); if (i < 0) return fail('اتاق پیدا نشد.');
+    if (patch.name !== undefined) {
+      patch.name = clean(patch.name).replace(/\s+/g, ' ');
+      const l = [...patch.name].length;
+      if (l < 3 || l > 30) return fail('نام اتاق باید بین ۳ تا ۳۰ نویسه باشد.');
+      if (a.some(r => r.id !== id && r.type !== 'dm' && normName(r.name) === normName(patch.name))) return fail('اتاقی با این نام وجود دارد.');
+    }
+    if (patch.desc !== undefined) patch.desc = clean(patch.desc).slice(0, 140);
+    a[i] = { ...a[i], ...patch }; saveRooms(a);
+    log('room-update', `اتاق «${a[i].name}» ویرایش شد.`, by);
+    return ok({ room: a[i] });
+  }
+  function deleteRoom(id, by, silent) {
+    const r = roomById(id); if (!r) return false;
+    saveRooms(rooms().filter(x => x.id !== id)); del('msgs:' + id); cache.delete(id);
+    set('reports', get('reports', []).filter(x => x.roomId !== id));
+    if (!silent) log('room-delete', `اتاق «${r.name}» حذف شد.`, by);
+    return true;
+  }
+  function dmRoom(a, b) {
+    if (a === b) return null;
+    const id = 'dm_' + [a, b].sort().join('_');
+    if (!roomById(id)) {
+      const all = rooms(); all.push({ id, type: 'dm', members: [a, b], name: '', createdAt: now(), locked: false, pinned: null }); saveRooms(all);
+    }
+    return roomById(id);
+  }
+
+  /* ---------- پیام‌ها ---------- */
+  const cache = new Map();
+  function msgs(roomId) {
+    const raw = rawGet('msgs:' + roomId) || '[]';
+    const c = cache.get(roomId);
+    if (c && c.raw === raw) return c.arr;
+    let arr; try { arr = JSON.parse(raw); if (!Array.isArray(arr)) arr = []; } catch { arr = []; }
+    cache.set(roomId, { raw, arr });
+    return arr;
+  }
+  const msgsFresh = roomId => JSON.parse(JSON.stringify(msgs(roomId)));
+  function saveMsgs(roomId, arr) {
+    arr = arr.slice(-MAX_MSGS_PER_ROOM);
+    const okk = set('msgs:' + roomId, arr);
+    cache.delete(roomId);
+    return okk;
+  }
+  function totalMessages() { return rooms().reduce((n, r) => n + msgs(r.id).length, 0); }
+  function filterText(text) {
+    let t = text;
+    settings().bannedWords.forEach(w => {
+      w = w.trim(); if (!w) return;
+      t = t.replace(new RegExp(w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi'), m => '•'.repeat([...m].length));
+    });
+    return t;
+  }
+  const lastSend = {};
+  function checkCanPost(user, room) {
+    if (!user || user.status === 'banned') return 'حساب شما مسدود است.';
+    if (user.muted) return 'شما توسط مدیر بی‌صدا شده‌اید و نمی‌توانید پیام بفرستید.';
+    if (!room) return 'اتاق پیدا نشد.';
+    if (room.type === 'dm' && !room.members.includes(user.id)) return 'به این گفتگو دسترسی نداری.';
+    if (room.locked && !isMod(user)) return 'این اتاق قفل است و فقط مدیران می‌توانند پیام بفرستند.';
+    if (settings().maintenance && !isAdmin(user)) return settings().maintenanceMsg;
+    return '';
+  }
+  function sendMessage(userId, roomId, text, replyTo = null) {
+    const user = userById(userId), room = roomById(roomId), st = settings();
+    const e = checkCanPost(user, room); if (e) return fail(e);
+    text = clean(text);
+    if (!text) return fail('پیام خالی است.');
+    if ([...text].length > st.maxLen) return fail(`پیام نباید بیش از ${fa(st.maxLen)} نویسه باشد.`);
+    const k = userId + ':' + roomId, t = now();
+    if (t - (lastSend[k] || 0) < 400) return fail('خیلی سریع پیام می‌فرستی؛ کمی صبر کن.');
+    if (st.slowMode > 0 && !isMod(user)) {
+      const wait = Math.ceil((st.slowMode * 1000 - (t - (get('lastsend', {})[k] || 0))) / 1000);
+      if (wait > 0) return fail(`حالت آهسته فعال است. ${fa(wait)} ثانیه دیگر می‌توانی پیام بفرستی.`);
+    }
+    const arr = msgsFresh(roomId);
+    const m = { id: 'm_' + uid(), roomId, userId, name: user.name, color: user.color, text: filterText(text), time: t, replyTo: replyTo && arr.some(x => x.id === replyTo) ? replyTo : null, edited: 0, reactions: {} };
+    arr.push(m);
+    if (!saveMsgs(roomId, arr)) return fail('ذخیره‌سازی پر است یا در دسترس نیست.');
+    lastSend[k] = t;
+    if (st.slowMode > 0) { const ls = get('lastsend', {}); ls[k] = t; set('lastsend', ls); }
+    return ok({ message: m });
+  }
+  function editMessage(userId, roomId, msgId, text) {
+    const user = userById(userId), room = roomById(roomId), st = settings();
+    const e = checkCanPost(user, room); if (e) return fail(e);
+    if (!st.allowEdit) return fail('ویرایش پیام توسط مدیر غیرفعال شده است.');
+    text = clean(text);
+    if (!text) return fail('پیام خالی است.');
+    if ([...text].length > st.maxLen) return fail(`پیام نباید بیش از ${fa(st.maxLen)} نویسه باشد.`);
+    const arr = msgsFresh(roomId); const m = arr.find(x => x.id === msgId);
+    if (!m) return fail('پیام پیدا نشد.');
+    if (m.userId !== userId) return fail('فقط پیام‌های خودت را می‌توانی ویرایش کنی.');
+    m.text = filterText(text); m.edited = now();
+    return saveMsgs(roomId, arr) ? ok() : fail('ذخیره نشد.');
+  }
+  function deleteMessages(roomId, ids, actorId) {
+    const actor = userById(actorId); const set_ = new Set(ids);
+    const arr = msgsFresh(roomId);
+    const allowed = arr.filter(m => set_.has(m.id) && (isMod(actor) || m.userId === actorId));
+    if (!allowed.length) return fail('اجازه‌ی حذف نداری.');
+    const kill = new Set(allowed.map(m => m.id));
+    saveMsgs(roomId, arr.filter(m => !kill.has(m.id)));
+    const r = roomById(roomId);
+    if (r && r.pinned && kill.has(r.pinned)) updateRoom(roomId, { pinned: null }, actorId);
+    if (allowed.some(m => m.userId !== actorId)) log('delete-messages', `${fa(allowed.length)} پیام در «${r ? r.name || 'گفتگوی خصوصی' : '؟'}» حذف شد.`, actorId);
+    return ok({ count: allowed.length });
+  }
+  function clearRoom(roomId, by) {
+    const r = roomById(roomId); if (!r) return false;
+    saveMsgs(roomId, []); updateRoom(roomId, { pinned: null }, by);
+    log('room-clear', `همه‌ی پیام‌های «${r.name}» پاک شد.`, by); return true;
+  }
+  function toggleReaction(userId, roomId, msgId, emoji) {
+    const user = userById(userId); if (!user || user.muted || user.status === 'banned') return fail('اجازه نداری.');
+    const arr = msgsFresh(roomId); const m = arr.find(x => x.id === msgId); if (!m) return fail('پیام پیدا نشد.');
+    m.reactions = m.reactions || {}; const l = m.reactions[emoji] || [];
+    const i = l.indexOf(userId); if (i >= 0) l.splice(i, 1); else l.push(userId);
+    if (l.length) m.reactions[emoji] = l; else delete m.reactions[emoji];
+    saveMsgs(roomId, arr); return ok();
+  }
+  function reportMessage(userId, roomId, msgId, reason) {
+    const m = msgs(roomId).find(x => x.id === msgId); if (!m) return fail('پیام پیدا نشد.');
+    const all = get('reports', []);
+    if (all.some(r => r.msgId === msgId && r.reporterId === userId && r.status === 'open')) return fail('قبلاً این پیام را گزارش کرده‌ای.');
+    const u = userById(m.userId);
+    all.unshift({ id: 'rp_' + uid(), msgId, roomId, reporterId: userId, authorId: m.userId, authorName: u ? u.name : m.name, text: m.text, reason: clean(reason).slice(0, 200) || 'بدون توضیح', time: now(), status: 'open' });
+    set('reports', all.slice(0, 500)); return ok();
+  }
+  const readState = uidv => get('read:' + uidv, {});
+  function markRead(uidv, roomId) { const r = readState(uidv); r[roomId] = now(); set('read:' + uidv, r); }
+  function unread(uidv, roomId, rs) {
+    const t = (rs || readState(uidv))[roomId] || 0;
+    const a = msgs(roomId); let n = 0;
+    for (let i = a.length - 1; i >= 0 && a[i].time > t; i--) if (a[i].userId !== uidv) n++;
+    return n;
+  }
+  const prefs = uidv => get('prefs:' + uidv, {});
+  function setPref(uidv, patch) { set('prefs:' + uidv, { ...prefs(uidv), ...patch }); }
+
+  /* ---------- قالب‌بندی متن ---------- */
+  function fmt(text) {
+    return esc(text).replace(
+      /(https?:\/\/(?:(?!&(?:quot|lt|gt|#39);)[^\s<])+)|(@[A-Za-z0-9_\u0600-\u06FF]{3,20})/g,
+      (m, url, men) => {
+        if (url) {
+          const t = url.match(/[.,;:!?)\]،؛]+$/); const tail = t ? t[0] : ''; const u = tail ? url.slice(0, -tail.length) : url;
+          return `<a href="${u}" target="_blank" rel="noopener noreferrer nofollow">${u}</a>${tail}`;
+        }
+        return `<span class="mention" data-mention="${esc(men.slice(1))}">${men}</span>`;
+      });
+  }
+  function avatar(u, size = 38) {
+    const name = u ? u.name : '؟';
+    return `<span class="avatar" style="background:${safeColor(u && u.color)};width:${size}px;height:${size}px;font-size:${Math.round(size * .4)}px">${esc([...name][0] || '؟')}</span>`;
+  }
+
+  /* ---------- ایجاد داده‌ی اولیه ---------- */
+  function seed() {
+    if (CLOUD && !synced) return;
+    if (get('seeded', false)) return;
+    const mk = (id, name, desc, icon) => ({ id, type: 'room', name, desc, icon, createdBy: null, createdAt: now(), locked: false, pinned: null });
+    if (!rooms().length) saveRooms([
+      mk('r_general', 'عمومی', 'اتاق اصلی برای گپ و گفت‌وگوی آزاد', '💬'),
+      mk('r_tech', 'فناوری', 'برنامه‌نویسی، گجت و هر چیزی که فنی است', '💻'),
+      mk('r_fun', 'سرگرمی', 'فیلم، موسیقی، بازی و خنده', '🎮')
+    ]);
+    set('seeded', true);
+  }
+  const hasAdmin = () => users().some(u => u.role === 'admin');
+
+  /* ---------- پشتیبان‌گیری ---------- */
+  const SKIP = /^(session|presence|attempts|lastsend|__)/;
+  function exportAll() {
+    const data = {};
+    allKeys().forEach(k => { if (!SKIP.test(k)) data[k] = get(k, null); });
+    return { app: 'gapkhane', version: 2, exportedAt: now(), data };
+  }
+  function importAll(obj) {
+    if (!obj || obj.app !== 'gapkhane' || !obj.data || !Array.isArray(obj.data.users) || !Array.isArray(obj.data.rooms)) return fail('این فایل پشتیبان معتبر گپ‌خانه نیست.');
+    if (!obj.data.users.some(u => u && u.role === 'admin')) return fail('فایل پشتیبان هیچ مدیری ندارد؛ وارد کردن آن شما را قفل می‌کند.');
+    allKeys().forEach(k => { if (!SKIP.test(k)) del(k); });
+    let n = 0;
+    for (const k in obj.data) { if (SKIP.test(k)) continue; if (set(k, obj.data[k])) n++; }
+    cache.clear(); set('seeded', true);
+    return ok({ keys: n });
+  }
+  function resetAll() { allKeys().forEach(k => del(k)); if (CLOUD) pushOps(['users', 'rooms', 'msgs', 'reports', 'logs', 'presence', 'read', 'kv'].map(p => [p, null])); cache.clear(); clearSession(); clearAdminSession(); }
+
+  /* ---------- رابط: تم، اعلان، پنجره ---------- */
+  const theme = () => get('theme', 'dark');
+  function applyTheme(t) {
+    t = t || theme(); document.documentElement.dataset.theme = t;
+    const m = document.querySelector('meta[name="theme-color"]'); if (m) m.content = t === 'dark' ? '#090e1b' : '#f1f4fa';
+  }
+  function setTheme(t) { set('theme', t); applyTheme(t); }
+
+  function el(html) { const t = document.createElement('template'); t.innerHTML = html.trim(); return t.content.firstElementChild; }
+  function toast(msg, type = '') {
+    let box = document.querySelector('.gk-toasts');
+    if (!box) { box = document.createElement('div'); box.className = 'gk-toasts'; box.setAttribute('role', 'status'); document.body.append(box); }
+    const t = document.createElement('div'); t.className = 'gk-toast ' + type; t.textContent = msg; box.append(t);
+    setTimeout(() => t.remove(), type === 'error' ? 4200 : 2600);
+  }
+  function modal(o) {
+    const prev = document.activeElement;
+    const scrim = el(`<div class="gk-scrim"><div class="gk-modal${o.wide ? ' wide' : ''}" role="dialog" aria-modal="true"><div class="gk-mh"><h3></h3><button type="button" class="btn ghost icon-btn" data-x aria-label="بستن">✕</button></div><div class="gk-mb"></div><div class="gk-mf"></div></div></div>`);
+    scrim.querySelector('h3').textContent = o.title || '';
+    const mb = scrim.querySelector('.gk-mb'), mf = scrim.querySelector('.gk-mf');
+    if (typeof o.body === 'string') mb.innerHTML = o.body; else if (o.body) mb.append(o.body);
+    let res; const done = new Promise(r => { res = r; }); let closed = false;
+    const h = {
+      el: scrim, body: mb, done, result: undefined,
+      close(v = null) {
+        if (closed) return; closed = true;
+        document.removeEventListener('keydown', onKey, true); scrim.remove();
+        try { prev && prev.focus && prev.focus(); } catch {}
+        res(v);
+      }
+    };
+    (o.actions || []).forEach(a => {
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'btn ' + (a.cls || ''); b.textContent = a.label;
+      if (a.cls && /primary|danger/.test(a.cls)) b.dataset.main = '1';
+      b.onclick = async () => {
+        b.disabled = true; h.result = undefined; let r;
+        try { r = a.onClick ? await a.onClick(h) : undefined; } catch (e) { console.error(e); r = false; }
+        b.disabled = false;
+        if (r === false) return;
+        h.close(h.result !== undefined ? h.result : (a.value !== undefined ? a.value : true));
+      };
+      mf.append(b);
+    });
+    function onKey(e) {
+      if (!scrim.isConnected) return;
+      const top = [...document.querySelectorAll('.gk-scrim')].pop(); if (top !== scrim) return;
+      if (e.key === 'Escape') { e.stopPropagation(); h.close(null); }
+      else if (e.key === 'Enter' && e.target.tagName === 'INPUT' && e.target.type !== 'checkbox' && e.target.type !== 'radio') {
+        const m = mf.querySelector('[data-main]'); if (m) { e.preventDefault(); m.click(); }
+      } else if (e.key === 'Tab') {
+        const f = [...scrim.querySelectorAll('button:not(:disabled),input:not(:disabled),textarea,select,a[href]')].filter(x => x.offsetParent !== null);
+        if (!f.length) return;
+        const i = f.indexOf(document.activeElement);
+        if (e.shiftKey && i <= 0) { e.preventDefault(); f[f.length - 1].focus(); }
+        else if (!e.shiftKey && i === f.length - 1) { e.preventDefault(); f[0].focus(); }
+      }
+    }
+    scrim.addEventListener('mousedown', e => { if (e.target === scrim) h.close(null); });
+    scrim.querySelector('[data-x]').onclick = () => h.close(null);
+    document.addEventListener('keydown', onKey, true);
+    document.body.append(scrim);
+    const first = mb.querySelector('input:not([type=checkbox]):not([type=radio]),textarea,select') || mf.querySelector('[data-main]') || mf.querySelector('button');
+    if (first) first.focus();
+    if (o.onOpen) o.onOpen(h);
+    return h;
+  }
+  function confirmBox(msg, { title = 'تأیید', ok: okLabel = 'تأیید', danger = false } = {}) {
+    return modal({ title, body: `<p class="gk-p">${esc(msg)}</p>`, actions: [{ label: 'انصراف', cls: 'ghost', value: false }, { label: okLabel, cls: danger ? 'danger solid' : 'primary', value: true }] }).done.then(v => v === true);
+  }
+  function promptBox({ title, label = '', value = '', type = 'text', ok: okLabel = 'ذخیره', placeholder = '', maxlength = 200, multiline = false, hint = '', validate }) {
+    const h = modal({
+      title,
+      body: `<div class="field"><label class="lbl" for="gk-pi">${esc(label)}</label>${multiline ? `<textarea id="gk-pi" rows="4" maxlength="${maxlength}" placeholder="${esc(placeholder)}"></textarea>` : `<input id="gk-pi" type="${type}" maxlength="${maxlength}" placeholder="${esc(placeholder)}" autocomplete="off">`}${hint ? `<div class="hint">${esc(hint)}</div>` : ''}<div class="err" id="gk-pe"></div></div>`,
+      actions: [
+        { label: 'انصراف', cls: 'ghost', value: null },
+        { label: okLabel, cls: 'primary', onClick: hh => {
+          const v = hh.el.querySelector('#gk-pi').value;
+          const e = validate ? validate(v) : '';
+          if (e) { hh.el.querySelector('#gk-pe').textContent = e; return false; }
+          hh.result = v;
+        } }
+      ]
+    });
+    h.el.querySelector('#gk-pi').value = value;
+    return h.done.then(v => (typeof v === 'string' ? v : null));
+  }
+  let ac = null;
+  function beep() {
+    try {
+      ac = ac || new (window.AudioContext || window.webkitAudioContext)();
+      const o = ac.createOscillator(), g = ac.createGain();
+      o.type = 'sine'; o.frequency.value = 760; g.gain.value = .05;
+      o.connect(g); g.connect(ac.destination); o.start();
+      g.gain.exponentialRampToValueAtTime(.0001, ac.currentTime + .18); o.stop(ac.currentTime + .2);
+    } catch {}
+  }
+
+  startCloud();
+
+  return {
+    ready, onStatus, cloud: !!CLOUD,
+    COLORS, NAME_RE, persistent, get, set, del, allKeys, usedBytes, onChange, onError, uid, esc, fa, now, normName, clean,
+    timeText, dayText, dateText, dateTime, ago, safeColor, clamp, debounce, download, el,
+    settings, saveSettings, DEFAULTS,
+    users, userById, userByName, updateUser, isMod, isAdmin, roleLabel, createUser, register, login, verifyPass, changePassword, setPassword, randomPassword, deleteUser, validatePass, hasBanned, hasAdmin,
+    sessionState, setSession, clearSession, adminState, setAdminSession, clearAdminSession,
+    heartbeat, lastSeen, isOnline, onlineCount,
+    rooms, roomById, roomsFor, roomTitle, createRoom, updateRoom, deleteRoom, dmRoom,
+    msgs, totalMessages, checkCanPost, sendMessage, editMessage, deleteMessages, clearRoom, toggleReaction, reportMessage, readState, markRead, unread, prefs, setPref,
+    fmt, avatar, seed, log, exportAll, importAll, resetAll,
+    theme, applyTheme, setTheme, toast, modal, confirm: confirmBox, prompt: promptBox, beep
+  };
+})();
+
+</script>
+<script>
+function runChat() {
+'use strict';
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const { esc, fa } = GK;
+const EMOJIS = ['😀','😃','😄','😁','😆','😅','😂','🤣','😊','😇','🙂','🙃','😉','😍','🥰','😘','😎','🤩','🤔','🤗','🥳','😭','😢','😡','🤯','🥹','😴','🙏','👍','👎','👏','🙌','💪','🤝','🔥','✨','❤️','💜','💙','💚','💛','💔','🎉','🌹','☕','🍕','🎧','⭐','🌙','☀️','👀','🫡','💯','✅','❌','🚀','🌈','🎮','⚽','🎵'];
+const REACTS = ['👍','❤️','😂','😮','😢','🔥'];
+const ICONS = ['💬','💻','🎮','🎵','📚','⚽','☕','🌍','🎬','🍕','🎨','🚀'];
+const S = { me: null, room: null, replyTo: null, editing: null, search: '', limit: 150, color: GK.COLORS[0], timer: 0, dirty: {}, lastNotified: {} };
+
+GK.seed(); GK.applyTheme();
+GK.onError(() => GK.toast('ذخیره‌سازی مرورگر پر یا غیرفعال است؛ تغییرات ذخیره نشد.', 'error'));
+
+/* ================= ورود / ثبت‌نام ================= */
+function brand() {
+  const st = GK.settings();
+  $('#authBrand').textContent = st.siteName; $('#authLogo').textContent = [...st.siteName][0] || 'گ';
+  document.title = st.siteName;
+}
+function showAuth(msg) {
+  clearInterval(S.timer); S.me = null; S.room = null;
+  $('#app').hidden = true; $('#auth').hidden = false; brand();
+  const st = GK.settings(), n = $('#authNotice'); const notes = [];
+  if (msg) notes.push(msg);
+  if (st.maintenance) notes.push(st.maintenanceMsg);
+  if (!GK.persistent) notes.push('ذخیره‌سازی مرورگر غیرفعال است؛ با بستن صفحه داده‌ها از بین می‌روند.');
+  $('#authFoot').textContent = GK.cloud ? 'پیام‌ها آنلاین و لحظه‌ای بین همه همگام می‌شوند.' : 'داده‌ها فقط در همین مرورگر ذخیره می‌شوند.';
+  n.hidden = !notes.length; n.textContent = notes.join(' ');
+  const closed = !st.registrationOpen;
+  $('#tabReg').disabled = closed; $('#tabReg').title = closed ? 'ثبت‌نام فعلاً بسته است' : '';
+  if (closed) switchTab('login');
+  document.title = st.siteName; $('#lp').value = ''; $('#loginErr').textContent = '';
+  setTimeout(() => $('#lu').focus(), 30);
+}
+function switchTab(t) {
+  const reg = t === 'reg';
+  $('#loginForm').hidden = reg; $('#regForm').hidden = !reg;
+  $('#tabLogin').setAttribute('aria-selected', String(!reg)); $('#tabReg').setAttribute('aria-selected', String(reg));
+}
+$('#tabLogin').onclick = () => switchTab('login');
+$('#tabReg').onclick = () => switchTab('reg');
+$$('[data-eye]').forEach(b => b.onclick = () => { const i = $('#' + b.dataset.eye); i.type = i.type === 'password' ? 'text' : 'password'; });
+
+function colorPicker(box, get, set) {
+  box.replaceChildren();
+  GK.COLORS.forEach(c => {
+    const b = document.createElement('button'); b.type = 'button'; b.style.background = c; b.setAttribute('role', 'radio'); b.setAttribute('aria-label', 'رنگ ' + c);
+    b.setAttribute('aria-checked', String(get() === c));
+    b.onclick = () => { set(c); [...box.children].forEach(x => x.setAttribute('aria-checked', String(x === b))); };
+    box.append(b);
+  });
+}
+colorPicker($('#regColors'), () => S.color, c => { S.color = c; });
+
+function strength(p) {
+  let s = 0;
+  if (p.length >= 6) s++; if (p.length >= 10) s++;
+  if (/[a-z]/.test(p) && /[A-Z]/.test(p)) s++; if (/\d/.test(p)) s++; if (/[^A-Za-z0-9]/.test(p)) s++;
+  return Math.min(4, s);
+}
+$('#rp').addEventListener('input', e => {
+  const s = e.target.value ? strength(e.target.value) : 0;
+  const m = $('#meter'); m.style.width = (s * 25) + '%';
+  m.style.background = ['var(--danger)', 'var(--danger)', 'var(--warn)', 'var(--ok)', 'var(--ok)'][s];
+  $('#meterTxt').textContent = e.target.value ? ['خیلی ضعیف', 'ضعیف', 'متوسط', 'خوب', 'قوی'][s] : '';
+});
+
+$('#loginForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const u = $('#lu').value, p = $('#lp').value, err = $('#loginErr');
+  if (!u.trim() || !p) { err.textContent = 'نام کاربری و رمز عبور را وارد کن.'; return; }
+  const b = $('#loginBtn'); b.disabled = true; b.textContent = 'در حال ورود…'; err.textContent = '';
+  const r = await GK.login(u, p, { remember: $('#lr').checked });
+  b.disabled = false; b.textContent = 'ورود به گپ‌خانه';
+  if (!r.ok) { err.textContent = r.error; return; }
+  enter(r.user);
+});
+$('#regForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const err = $('#regErr'); err.textContent = '';
+  if ($('#rp').value !== $('#rp2').value) { err.textContent = 'رمز عبور و تکرار آن یکسان نیستند.'; return; }
+  const b = $('#regBtn'); b.disabled = true; b.textContent = 'در حال ساخت…';
+  const r = await GK.register({ username: $('#ru').value, name: $('#rn').value, password: $('#rp').value, color: S.color });
+  b.disabled = false; b.textContent = 'ساخت حساب';
+  if (!r.ok) { err.textContent = r.error; return; }
+  GK.setSession(r.user.id, true);
+  e.target.reset(); $('#meter').style.width = '0'; $('#meterTxt').textContent = '';
+  enter(r.user, true);
+});
+
+/* ================= ورود به برنامه ================= */
+function enter(user, first) {
+  S.me = user;
+  $('#auth').hidden = true; $('#app').hidden = false;
+  const rs = GK.roomsFor(user); const p = GK.prefs(user.id);
+  S.room = null;
+  renderMe(); renderSidebar(); buildEmoji();
+  const target = rs.find(r => r.id === p.last) || rs[0];
+  if (target) openRoom(target.id); else { renderHeader(); renderMessages(true); updateComposer(); }
+  GK.heartbeat(user.id);
+  clearInterval(S.timer); S.timer = setInterval(tick, 20000);
+  GK.toast(first ? `خوش آمدی ${user.name}! حسابت ساخته شد.` : `سلام ${user.name} 👋`, 'ok');
+  if (first && GK.settings().welcome) setTimeout(() => GK.modal({ title: 'به ' + GK.settings().siteName + ' خوش آمدی', body: `<p class="gk-p">${esc(GK.settings().welcome)}</p>`, actions: [{ label: 'شروع گفت‌وگو', cls: 'primary' }] }), 500);
+}
+function renderMe() {
+  const m = S.me;
+  $('#meAv').innerHTML = GK.avatar(m, 42); $('#meName').textContent = m.name;
+  $('#meUser').textContent = '@' + m.username;
+  $('#adminLink').hidden = !GK.isAdmin(m);
+  $('#themeBtn').textContent = GK.theme() === 'dark' ? '☀️ روشن' : '🌙 تاریک';
+}
+function revalidate() {
+  if (!S.me) return false;
+  const u = GK.userById(S.me.id), st = GK.settings();
+  if (!u) { forceLogout('حساب شما حذف شده است.'); return false; }
+  if (u.status === 'banned') { forceLogout('حساب شما مسدود شد.' + (u.banReason ? ' دلیل: ' + u.banReason : '')); return false; }
+  if (st.maintenance && u.role !== 'admin') { forceLogout(st.maintenanceMsg); return false; }
+  S.me = u; return true;
+}
+function forceLogout(msg) { GK.clearSession(); showAuth(msg); }
+function tick() {
+  if (!S.me) return;
+  if (!revalidate()) return;
+  GK.heartbeat(S.me.id); renderMember(); renderHeader(); updateTitle();
+}
+
+/* ================= نوار کناری ================= */
+function lastMsg(r) { const a = GK.msgs(r.id); return a[a.length - 1] || null; }
+function preview(m) {
+  if (!m) return 'هنوز پیامی نیست';
+  const u = GK.userById(m.userId); const who = m.userId === S.me.id ? 'تو' : (u ? u.name : m.name);
+  return who + ': ' + m.text.replace(/\s+/g, ' ').slice(0, 40);
+}
+function roomItem(r, rs) {
+  const m = lastMsg(r), un = GK.unread(S.me.id, r.id, rs), cur = S.room && S.room.id === r.id;
+  let icon;
+  if (r.type === 'dm') icon = GK.avatar(GK.userById(r.members.find(x => x !== S.me.id)), 40);
+  else icon = `<span class="ricon">${esc(r.icon || '💬')}</span>`;
+  return `<button class="item" data-room="${esc(r.id)}" ${cur ? 'aria-current="true"' : ''}>${icon}
+    <span class="item-main"><span class="item-top"><span class="item-name ellipsis">${esc(GK.roomTitle(r, S.me.id))}${r.locked ? ' 🔒' : ''}</span><span class="item-time">${m ? GK.timeText(m.time) : ''}</span></span>
+    <span class="item-top"><span class="item-last ellipsis">${esc(preview(m))}</span>${un && !cur ? `<span class="badge">${fa(un > 99 ? 99 : un)}</span>` : ''}</span></span></button>`;
+}
+function renderSidebar() {
+  if (!S.me) return;
+  const q = GK.normName(S.roomFilter), rs = GK.readState(S.me.id);
+  const all = GK.roomsFor(S.me);
+  const ok = r => !q || GK.normName(GK.roomTitle(r, S.me.id)).includes(q);
+  const pub = all.filter(r => r.type !== 'dm' && ok(r)), dms = all.filter(r => r.type === 'dm' && ok(r));
+  $('#roomList').innerHTML = pub.map(r => roomItem(r, rs)).join('') || '<div class="muted small" style="padding:8px">اتاقی پیدا نشد.</div>';
+  $('#dmList').innerHTML = dms.map(r => roomItem(r, rs)).join('') || '<div class="muted small" style="padding:8px">با کلیک روی یک عضو، پیام خصوصی بده.</div>';
+  $('#newRoomBtn').hidden = !(GK.settings().allowRoomCreate || GK.isMod(S.me));
+  renderMember(); updateTitle();
+}
+function renderMember() {
+  if (!S.me) return;
+  const q = GK.normName(S.roomFilter);
+  const list = GK.users().filter(u => !q || GK.normName(u.name + ' ' + u.username).includes(q))
+    .sort((a, b) => GK.isOnline(b.id) - GK.isOnline(a.id) || a.name.localeCompare(b.name, 'fa'));
+  $('#memberCount').textContent = fa(GK.onlineCount()) + ' آنلاین از ' + fa(GK.users().length);
+  $('#memberList').innerHTML = list.slice(0, 80).map(u => `<button class="item" data-user="${esc(u.id)}">${GK.avatar(u, 36)}
+    <span class="item-main"><span class="item-top"><span class="item-name ellipsis">${esc(u.name)}</span>${u.role !== 'user' ? `<span class="tag ${u.role === 'admin' ? 'admin' : ''}">${GK.roleLabel(u.role)}</span>` : ''}${u.status === 'banned' ? '<span class="tag bad">مسدود</span>' : ''}</span>
+    <span class="item-last"><span class="dot ${GK.isOnline(u.id) ? 'on' : ''}"></span> ${GK.isOnline(u.id) ? 'آنلاین' : 'آخرین بازدید ' + esc(GK.ago(GK.lastSeen(u)))}</span></span></button>`).join('');
+}
+function updateTitle() {
+  if (!S.me) return;
+  const rs = GK.readState(S.me.id); let n = 0;
+  GK.roomsFor(S.me).forEach(r => { if (!(S.room && S.room.id === r.id && !document.hidden)) n += GK.unread(S.me.id, r.id, rs); });
+  document.title = (n ? `(${fa(n)}) ` : '') + GK.settings().siteName;
+}
+$('#roomFilter').addEventListener('input', e => { S.roomFilter = e.target.value; renderSidebar(); });
+$('#sideScroll').addEventListener('click', e => {
+  const r = e.target.closest('[data-room]'); if (r) { openRoom(r.dataset.room); return; }
+  const u = e.target.closest('[data-user]'); if (u) showProfile(u.dataset.user);
+});
+const openSidebar = () => { $('#sidebar').classList.add('open'); $('#scrim').classList.add('show'); };
+const closeSidebar = () => { $('#sidebar').classList.remove('open'); $('#scrim').classList.remove('show'); };
+$('#menuBtn').onclick = openSidebar; $('#scrim').onclick = closeSidebar;
+
+/* ================= اتاق و پیام‌ها ================= */
+function saveDraft() {
+  if (!S.me || !S.room) return;
+  const d = { ...(GK.prefs(S.me.id).drafts || {}) }; const v = $('#msg').value;
+  if (S.editing) return;
+  if (v.trim()) d[S.room.id] = v; else delete d[S.room.id];
+  GK.setPref(S.me.id, { drafts: d });
+}
+const saveDraftSoon = GK.debounce(saveDraft, 500);
+function openRoom(id) {
+  const r = GK.roomById(id); if (!r) return;
+  if (S.room && S.room.id !== id) saveDraft();
+  S.room = r; S.replyTo = null; S.editing = null; S.search = ''; S.limit = 150;
+  $('#searchWrap').hidden = true; $('#searchInput').value = ''; $('#emoji').hidden = true;
+  $('#msg').value = (GK.prefs(S.me.id).drafts || {})[id] || '';
+  GK.markRead(S.me.id, id); GK.setPref(S.me.id, { last: id });
+  renderHeader(); renderBar(); updateComposer(); renderPinned(); renderMessages(true); renderSidebar(); closeSidebar(); autosize();
+}
+function renderHeader() {
+  const r = S.room, hi = $('#hIcon');
+  if (!r) { $('#hTitle').textContent = 'گپ‌خانه'; $('#hSub').textContent = 'اتاقی انتخاب نشده'; hi.innerHTML = ''; return; }
+  $('#hTitle').textContent = GK.roomTitle(r, S.me.id) + (r.locked ? ' 🔒' : '');
+  if (r.type === 'dm') {
+    const o = GK.userById(r.members.find(x => x !== S.me.id));
+    hi.innerHTML = GK.avatar(o, 40);
+    $('#hSub').textContent = o ? (GK.isOnline(o.id) ? 'آنلاین' : 'آخرین بازدید ' + GK.ago(GK.lastSeen(o))) : 'کاربر حذف شده';
+  } else {
+    hi.innerHTML = `<span class="ricon">${esc(r.icon || '💬')}</span>`;
+    $('#hSub').textContent = fa(GK.users().length) + ' عضو · ' + fa(GK.onlineCount()) + ' آنلاین · ' + fa(GK.msgs(r.id).length) + ' پیام' + (r.desc ? ' · ' + r.desc : '');
+  }
+}
+function renderPinned() {
+  const r = S.room, bar = $('#pinBar'); if (!r || !r.pinned) { bar.hidden = true; return; }
+  const m = GK.msgs(r.id).find(x => x.id === r.pinned); if (!m) { bar.hidden = true; return; }
+  bar.hidden = false; $('#pinText').textContent = m.text.replace(/\s+/g, ' ');
+  $('#unpinBtn').hidden = !GK.isMod(S.me);
+}
+$('#pinBar').onclick = e => { if (e.target.closest('#unpinBtn')) return; if (S.room.pinned) jumpTo(S.room.pinned); };
+$('#unpinBtn').onclick = () => { GK.updateRoom(S.room.id, { pinned: null }, S.me.id); S.room = GK.roomById(S.room.id); renderPinned(); };
+
+function norm(s) { return String(s).normalize('NFKC').toLocaleLowerCase('fa'); }
+function renderMessages(bottom) {
+  const box = $('#messages'), feed = $('#feed'); if (!S.room) { feed.innerHTML = '<div class="empty"><div class="big">💬</div><h3>اتاقی وجود ندارد</h3><p>یک اتاق جدید بساز یا از مدیر بخواه اتاقی اضافه کند.</p></div>'; return; }
+  const nearBottom = box.scrollHeight - box.scrollTop - box.clientHeight < 140;
+  const prevH = box.scrollHeight, prevTop = box.scrollTop;
+  const all = GK.msgs(S.room.id), byId = new Map(all.map(m => [m.id, m])), users = new Map(GK.users().map(u => [u.id, u]));
+  let list = all; const q = norm(S.search.trim());
+  if (q) list = all.filter(m => norm(m.text).includes(q) || norm((users.get(m.userId) || m).name).includes(q));
+  $('#searchCount').textContent = q ? fa(list.length) + ' نتیجه' : '';
+  const hidden = q ? 0 : Math.max(0, list.length - S.limit);
+  if (!q) list = list.slice(-S.limit);
+  const me = S.me, mention = '@' + GK.normName(me.username);
+  let html = '', last = null, lastDay = '';
+  if (hidden) html += `<button class="btn sm more" data-more>نمایش ${fa(Math.min(hidden, 150))} پیام قدیمی‌تر</button>`;
+  if (!all.length) html += `<div class="empty"><div class="big">${S.room.type === 'dm' ? '🤝' : '✨'}</div><h3>${S.room.type === 'dm' ? 'شروع گفتگوی خصوصی' : 'اولین پیام را تو بفرست'}</h3><p>${esc(S.room.type === 'dm' ? 'پیام‌های این گفتگو فقط بین شما دو نفر است.' : (GK.settings().welcome || ''))}</p></div>`;
+  else if (q && !list.length) html += '<div class="empty"><div class="big">🔎</div><h3>پیامی پیدا نشد</h3><p>عبارت دیگری را امتحان کن.</p></div>';
+  for (const m of list) {
+    const day = new Date(m.time).toDateString();
+    if (day !== lastDay) { html += `<div class="day">${GK.dayText(m.time)}</div>`; lastDay = day; last = null; }
+    const cont = !!last && last.userId === m.userId && m.time - last.time < 3e5;
+    html += msgHTML(m, cont, users.get(m.userId), byId, me, mention);
+    last = m;
+  }
+  feed.innerHTML = html;
+  if (bottom || (nearBottom && !q)) box.scrollTop = box.scrollHeight;
+  else box.scrollTop = prevTop + (S.keepOffset ? box.scrollHeight - prevH : 0);
+  S.keepOffset = false;
+  onScroll();
+  if (!document.hidden && GK.unread(me.id, S.room.id) > 0) { GK.markRead(me.id, S.room.id); renderSidebar(); }
+}
+function msgHTML(m, cont, u, byId, me, mention) {
+  const mine = m.userId === me.id, name = u ? u.name : m.name, color = GK.safeColor(u ? u.color : m.color);
+  const rep = m.replyTo ? byId.get(m.replyTo) : null;
+  const ru = rep ? GK.userById(rep.userId) : null;
+  const quote = m.replyTo ? `<span class="quote" data-jump="${esc(m.replyTo)}"><b>${rep ? esc(ru ? ru.name : rep.name) : 'پیام'}</b><span>${rep ? esc(rep.text.replace(/\s+/g, ' ').slice(0, 90)) : 'پیام حذف شده'}</span></span>` : '';
+  const reacts = Object.entries(m.reactions || {}).map(([e, ids]) => `<button class="react ${ids.includes(me.id) ? 'on' : ''}" data-act="react" data-emoji="${esc(e)}" title="${esc(ids.map(i => (GK.userById(i) || {}).name || '؟').join('، '))}">${esc(e)} ${fa(ids.length)}</button>`).join('');
+  const canMod = GK.isMod(me), canEdit = mine && GK.settings().allowEdit;
+  const tools = [
+    '<button data-act="reply">↩ پاسخ</button>', '<button data-act="pick">😊</button>', '<button data-act="copy">کپی</button>',
+    canEdit ? '<button data-act="edit">✎ ویرایش</button>' : '',
+    (mine || canMod) ? '<button data-act="delete">🗑 حذف</button>' : '',
+    canMod ? `<button data-act="pin">${S.room.pinned === m.id ? 'برداشتن سنجاق' : '📌 سنجاق'}</button>` : '',
+    !mine ? '<button data-act="report">⚑ گزارش</button>' : ''
+  ].join('');
+  const av = !mine ? (cont ? '<span class="av"></span>' : `<button class="av" data-user="${esc(m.userId)}" aria-label="پروفایل ${esc(name)}">${GK.avatar(u || { name, color }, 38)}</button>`) : '';
+  const head = (!mine && !cont) ? `<div class="mhead" style="color:${color}"><button data-user="${esc(m.userId)}">${esc(name)}</button>${u && u.role !== 'user' ? `<span class="tag ${u.role === 'admin' ? 'admin' : ''}">${GK.roleLabel(u.role)}</span>` : ''}${!u ? '<span class="tag bad">حذف‌شده</span>' : ''}</div>` : '';
+  const mentioned = !mine && GK.normName(m.text).includes(mention);
+  return `<article class="message${mine ? ' mine' : ''}${cont ? ' cont' : ''}${mentioned ? ' mentioned' : ''}" data-id="${esc(m.id)}">${av}<div class="mbody">${head}
+    <div class="bubble">${quote}<div>${GK.fmt(m.text)}</div><div class="meta">${m.edited ? '<span>ویرایش‌شده</span>' : ''}<span>${GK.timeText(m.time)}</span></div></div>
+    ${reacts ? `<div class="reacts">${reacts}</div>` : ''}<div class="picker">${REACTS.map(e => `<button data-act="react" data-emoji="${e}">${e}</button>`).join('')}</div><div class="tools">${tools}</div></div></article>`;
+}
+function jumpTo(id) {
+  let el = $(`.message[data-id="${CSS.escape(id)}"]`);
+  if (!el) { S.limit = 99999; S.search = ''; $('#searchInput').value = ''; renderMessages(false); el = $(`.message[data-id="${CSS.escape(id)}"]`); }
+  if (!el) { GK.toast('پیام اصلی حذف شده است.'); return; }
+  el.scrollIntoView({ block: 'center', behavior: 'smooth' }); el.classList.add('flash'); setTimeout(() => el.classList.remove('flash'), 1500);
+}
+function afterChange() { S.room = GK.roomById(S.room.id) || S.room; renderMessages(); renderSidebar(); renderPinned(); renderHeader(); }
+$('#feed').addEventListener('click', async e => {
+  if (e.target.closest('[data-more]')) { S.limit += 150; S.keepOffset = true; renderMessages(false); return; }
+  const j = e.target.closest('[data-jump]'); if (j) { jumpTo(j.dataset.jump); return; }
+  const us = e.target.closest('[data-user]'); if (us) { showProfile(us.dataset.user); return; }
+  const mn = e.target.closest('[data-mention]'); if (mn) { const u = GK.userByName(mn.dataset.mention); if (u) showProfile(u.id); else GK.toast('چنین کاربری وجود ندارد.'); return; }
+  const el = e.target.closest('.message'); if (!el) return;
+  const id = el.dataset.id, act = e.target.closest('[data-act]');
+  if (!act) {
+    if (e.target.closest('a')) return;
+    const was = el.classList.contains('show');
+    $$('.message.show,.message.picking').forEach(x => x.classList.remove('show', 'picking'));
+    if (!was) el.classList.add('show'); return;
+  }
+  const m = GK.msgs(S.room.id).find(x => x.id === id); if (!m) { afterChange(); return; }
+  const a = act.dataset.act;
+  if (a === 'pick') el.classList.toggle('picking');
+  else if (a === 'react') { const r = GK.toggleReaction(S.me.id, S.room.id, id, act.dataset.emoji); if (!r.ok) GK.toast(r.error, 'error'); afterChange(); }
+  else if (a === 'reply') { S.replyTo = id; S.editing = null; renderBar(); $('#msg').focus(); }
+  else if (a === 'copy') { try { await navigator.clipboard.writeText(m.text); GK.toast('متن کپی شد.', 'ok'); } catch { GK.toast('کپی خودکار پشتیبانی نمی‌شود.', 'error'); } }
+  else if (a === 'edit') startEdit(m);
+  else if (a === 'delete') {
+    if (!(await GK.confirm('این پیام حذف شود؟ این کار برگشت‌پذیر نیست.', { title: 'حذف پیام', ok: 'حذف', danger: true }))) return;
+    const r = GK.deleteMessages(S.room.id, [id], S.me.id); if (!r.ok) GK.toast(r.error, 'error'); else GK.toast('پیام حذف شد.');
+    if (S.replyTo === id) S.replyTo = null; if (S.editing === id) cancelEdit(); afterChange(); renderBar();
+  } else if (a === 'pin') { GK.updateRoom(S.room.id, { pinned: S.room.pinned === id ? null : id }, S.me.id); afterChange(); }
+  else if (a === 'report') {
+    const reason = await GK.prompt({ title: 'گزارش پیام', label: 'دلیل گزارش', placeholder: 'مثلاً توهین، تبلیغ، اسپم…', ok: 'ارسال گزارش', maxlength: 200 });
+    if (reason === null) return;
+    const r = GK.reportMessage(S.me.id, S.room.id, id, reason); GK.toast(r.ok ? 'گزارش برای مدیران ارسال شد.' : r.error, r.ok ? 'ok' : 'error');
+  }
+});
+const box = $('#messages');
+function onScroll() { $('#downBtn').hidden = box.scrollHeight - box.scrollTop - box.clientHeight < 300; }
+box.addEventListener('scroll', onScroll, { passive: true });
+$('#downBtn').onclick = () => { box.scrollTo({ top: box.scrollHeight, behavior: 'smooth' }); };
+
+/* ================= نوشتن پیام ================= */
+const input = $('#msg');
+function buildEmoji() {
+  const p = $('#emoji'); if (p.children.length) return;
+  EMOJIS.forEach(e => {
+    const b = document.createElement('button'); b.type = 'button'; b.textContent = e; b.setAttribute('aria-label', e);
+    b.onclick = () => {
+      const s = input.selectionStart ?? input.value.length, en = input.selectionEnd ?? s;
+      input.value = input.value.slice(0, s) + e + input.value.slice(en);
+      input.setSelectionRange(s + e.length, s + e.length); autosize(); input.focus();
+    };
+    p.append(b);
+  });
+}
+$('#emojiBtn').onclick = () => { $('#emoji').hidden = !$('#emoji').hidden; };
+function autosize() {
+  input.style.height = 'auto'; input.style.height = Math.min(input.scrollHeight, 140) + 'px';
+  const max = GK.settings().maxLen, n = [...input.value].length;
+  $('#count').textContent = fa(n) + ' / ' + fa(max); $('#count').style.color = n > max ? 'var(--danger)' : '';
+  $('#sendBtn').disabled = !input.value.trim() || input.disabled;
+}
+function updateComposer() {
+  const r = S.room; const why = r && S.me ? GK.checkCanPost(S.me, r) : 'اتاقی انتخاب نشده است.';
+  $('#blocked').hidden = !why; $('#blocked').textContent = why;
+  $('#box').hidden = !!why; $('#emojiBtn').disabled = input.disabled = !!why;
+  const st = GK.settings();
+  $('#hintL').textContent = st.slowMode > 0 && !GK.isMod(S.me || {}) ? `حالت آهسته: هر ${fa(st.slowMode)} ثانیه یک پیام` : 'Enter برای ارسال · Shift+Enter برای خط جدید';
+  autosize();
+}
+function renderBar() {
+  const b = $('#bar'); let t = '';
+  if (S.editing) t = '✎ در حال ویرایش پیام';
+  else if (S.replyTo) { const m = GK.msgs(S.room.id).find(x => x.id === S.replyTo); if (m) { const u = GK.userById(m.userId); t = '↩ پاسخ به ' + (u ? u.name : m.name) + ': ' + m.text.replace(/\s+/g, ' ').slice(0, 70); } else S.replyTo = null; }
+  b.hidden = !t; $('#barText').textContent = t;
+}
+function startEdit(m) { S.editing = m.id; S.replyTo = null; input.value = m.text; renderBar(); autosize(); input.focus(); }
+function cancelEdit() { S.editing = null; input.value = ''; renderBar(); autosize(); }
+$('#barCancel').onclick = () => { if (S.editing) cancelEdit(); else { S.replyTo = null; renderBar(); } };
+function send() {
+  if (!S.me || !S.room || !revalidate()) return;
+  const text = input.value; if (!text.trim()) return;
+  const r = S.editing ? GK.editMessage(S.me.id, S.room.id, S.editing, text) : GK.sendMessage(S.me.id, S.room.id, text, S.replyTo);
+  if (!r.ok) { GK.toast(r.error, 'error'); return; }
+  S.editing = null; S.replyTo = null; input.value = '';
+  const d = { ...(GK.prefs(S.me.id).drafts || {}) }; delete d[S.room.id]; GK.setPref(S.me.id, { drafts: d });
+  $('#emoji').hidden = true; renderBar(); autosize(); GK.markRead(S.me.id, S.room.id);
+  renderMessages(true); renderSidebar(); input.focus();
+}
+$('#sendBtn').onclick = send;
+input.addEventListener('input', () => { autosize(); saveDraftSoon(); });
+input.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); send(); }
+  else if (e.key === 'Escape') { if (S.editing) cancelEdit(); else if (S.replyTo) { S.replyTo = null; renderBar(); } }
+  else if (e.key === 'ArrowUp' && !input.value && GK.settings().allowEdit) {
+    const mine = GK.msgs(S.room.id).filter(m => m.userId === S.me.id).pop(); if (mine) { e.preventDefault(); startEdit(mine); }
+  }
+});
+
+/* ================= جستجو و اطلاعات اتاق ================= */
+$('#searchBtn').onclick = () => {
+  const w = $('#searchWrap'); w.hidden = !w.hidden;
+  if (w.hidden) { S.search = ''; $('#searchInput').value = ''; renderMessages(true); } else $('#searchInput').focus();
+};
+$('#searchInput').addEventListener('input', GK.debounce(e => { S.search = e.target.value; renderMessages(!S.search); }, 150));
+$('#infoBtn').onclick = () => {
+  const r = S.room; if (!r) return;
+  if (r.type === 'dm') { showProfile(r.members.find(x => x !== S.me.id)); return; }
+  const creator = r.createdBy ? GK.userById(r.createdBy) : null, mod = GK.isMod(S.me);
+  const h = GK.modal({
+    title: r.icon + ' ' + r.name,
+    body: `<p class="gk-p">${esc(r.desc || 'بدون توضیح')}</p>
+      <div class="small muted">ساخته‌شده ${esc(GK.dateText(r.createdAt))}${creator ? ' توسط ' + esc(creator.name) : ''}</div>
+      <div class="small muted">${fa(GK.msgs(r.id).length)} پیام · ${fa(GK.users().length)} عضو</div>
+      ${r.locked ? '<p class="notice" style="margin-top:12px">این اتاق قفل است؛ فقط مدیران و ناظران می‌توانند پیام بفرستند.</p>' : ''}`,
+    actions: [{ label: 'بستن', cls: 'ghost' }, ...(mod ? [{ label: r.locked ? '🔓 باز کردن اتاق' : '🔒 قفل کردن اتاق', onClick: () => { GK.updateRoom(r.id, { locked: !r.locked }, S.me.id); afterChange(); updateComposer(); } }] : [])]
+  });
+};
+
+/* ================= پروفایل‌ها ================= */
+function showProfile(id) {
+  const u = GK.userById(id); if (!u) { GK.toast('این کاربر دیگر وجود ندارد.'); return; }
+  const self = u.id === S.me.id;
+  const dmOK = !self && (GK.settings().allowDM || GK.isMod(S.me)) && u.status !== 'banned';
+  GK.modal({
+    title: 'پروفایل',
+    body: `<div class="row" style="margin-bottom:12px">${GK.avatar(u, 64)}<div><div style="font-weight:900;font-size:18px">${esc(u.name)} ${u.role !== 'user' ? `<span class="tag ${u.role === 'admin' ? 'admin' : ''}">${GK.roleLabel(u.role)}</span>` : ''}</div><div class="muted ltr">@${esc(u.username)}</div></div></div>
+      <p class="gk-p">${esc(u.bio || 'درباره‌ای ننوشته است.')}</p>
+      <div class="small muted"><span class="dot ${GK.isOnline(u.id) ? 'on' : ''}"></span> ${GK.isOnline(u.id) ? 'آنلاین' : 'آخرین بازدید ' + esc(GK.ago(GK.lastSeen(u)))} · عضو از ${esc(GK.dateText(u.createdAt))}</div>
+      ${u.muted ? '<div class="tag bad" style="margin-top:8px">بی‌صدا شده</div>' : ''}`,
+    actions: [{ label: 'بستن', cls: 'ghost' }, ...(self ? [{ label: '⚙️ ویرایش پروفایل', cls: 'primary', onClick: () => { setTimeout(openSettings, 0); } }] : []),
+      ...(dmOK ? [{ label: '💬 پیام خصوصی', cls: 'primary', onClick: () => { const r = GK.dmRoom(S.me.id, u.id); if (r) setTimeout(() => openRoom(r.id), 0); } }] : [])]
+  });
+}
+
+/* ================= اتاق جدید ================= */
+$('#newRoomBtn').onclick = () => {
+  if (!GK.settings().allowRoomCreate && !GK.isMod(S.me)) { GK.toast('ساخت اتاق توسط مدیر غیرفعال شده است.', 'error'); return; }
+  let icon = ICONS[0];
+  GK.modal({
+    title: 'اتاق جدید',
+    body: `<div class="field"><label class="lbl" for="nr-n">نام اتاق</label><input id="nr-n" maxlength="30" placeholder="مثلاً دورهمی جمعه"></div>
+      <div class="field"><label class="lbl" for="nr-d">توضیح کوتاه (اختیاری)</label><input id="nr-d" maxlength="140"></div>
+      <div class="field"><label class="lbl">آیکون</label><div class="pgrid" id="nr-i" role="radiogroup"></div></div><div class="err" id="nr-e"></div>`,
+    onOpen: h => {
+      const g = h.el.querySelector('#nr-i');
+      ICONS.forEach((e, i) => { const b = document.createElement('button'); b.type = 'button'; b.textContent = e; b.setAttribute('role', 'radio'); b.setAttribute('aria-checked', String(i === 0)); b.onclick = () => { icon = e; [...g.children].forEach(x => x.setAttribute('aria-checked', String(x === b))); }; g.append(b); });
+    },
+    actions: [{ label: 'انصراف', cls: 'ghost' }, { label: 'ساخت اتاق', cls: 'primary', onClick: h => {
+      const r = GK.createRoom({ name: h.el.querySelector('#nr-n').value, desc: h.el.querySelector('#nr-d').value, icon, by: S.me.id });
+      if (!r.ok) { h.el.querySelector('#nr-e').textContent = r.error; return false; }
+      setTimeout(() => openRoom(r.room.id), 0); GK.toast('اتاق ساخته شد.', 'ok');
+    } }]
+  });
+};
+
+/* ================= تنظیمات حساب ================= */
+function openSettings() {
+  const me = S.me, p = GK.prefs(me.id); let color = me.color;
+  GK.modal({
+    title: 'تنظیمات حساب', wide: true,
+    body: `<div class="field"><label class="lbl" for="s-n">نام نمایشی</label><input id="s-n" maxlength="20" value="${esc(me.name)}"></div>
+      <div class="field"><label class="lbl" for="s-b">درباره‌ی من</label><textarea id="s-b" rows="2" maxlength="120">${esc(me.bio || '')}</textarea></div>
+      <div class="field"><label class="lbl">رنگ پروفایل</label><div class="swatches" id="s-c" role="radiogroup"></div></div>
+      <div class="row wrap" style="gap:22px"><label class="check"><input type="checkbox" id="s-t" ${GK.theme() === 'dark' ? 'checked' : ''}> پوسته‌ی تاریک</label><label class="check"><input type="checkbox" id="s-s" ${p.sound ? 'checked' : ''}> صدای پیام جدید</label></div>
+      <div class="err" id="s-e"></div><hr>
+      <label class="lbl">تغییر رمز عبور</label>
+      <div class="field"><input id="p-o" type="password" placeholder="رمز فعلی" autocomplete="current-password"></div>
+      <div class="field"><input id="p-n" type="password" placeholder="رمز جدید" autocomplete="new-password"></div>
+      <div class="err" id="p-e"></div><button class="btn" id="p-b" type="button">تغییر رمز</button><hr>
+      <div class="row wrap"><button class="btn" id="x-b" type="button">📥 خروجی پیام‌های من</button><button class="btn danger" id="d-b" type="button">حذف حساب</button></div>`,
+    onOpen: h => {
+      colorPicker(h.el.querySelector('#s-c'), () => color, c => { color = c; });
+      h.el.querySelector('#s-t').onchange = e => { GK.setTheme(e.target.checked ? 'dark' : 'light'); renderMe(); };
+      h.el.querySelector('#p-b').onclick = async () => {
+        const e = h.el.querySelector('#p-e'); e.textContent = '';
+        const r = await GK.changePassword(me.id, h.el.querySelector('#p-o').value, h.el.querySelector('#p-n').value);
+        if (!r.ok) { e.textContent = r.error; return; }
+        h.el.querySelector('#p-o').value = h.el.querySelector('#p-n').value = ''; GK.toast('رمز عبور تغییر کرد.', 'ok');
+      };
+      h.el.querySelector('#x-b').onclick = () => {
+        const out = {}; GK.roomsFor(me).forEach(r => { const a = GK.msgs(r.id).filter(m => m.userId === me.id); if (a.length) out[GK.roomTitle(r, me.id)] = a.map(m => ({ time: new Date(m.time).toISOString(), text: m.text })); });
+        GK.download('my-messages.json', JSON.stringify(out, null, 2)); GK.toast('فایل آماده شد.', 'ok');
+      };
+      h.el.querySelector('#d-b').onclick = async () => {
+        if (GK.isAdmin(me) && GK.users().filter(u => u.role === 'admin').length < 2) { GK.toast('تنها مدیر سایت نمی‌تواند حساب خودش را حذف کند.', 'error'); return; }
+        const pw = await GK.prompt({ title: 'حذف حساب', label: 'برای تأیید، رمز عبورت را وارد کن', type: 'password', ok: 'حذف همیشگی', maxlength: 64 });
+        if (pw === null) return;
+        const u = GK.userById(me.id);
+        if (!(await GK.verifyPass(pw, u))) { GK.toast('رمز عبور درست نیست.', 'error'); return; }
+        GK.deleteUser(me.id, { purge: false, by: me.id }); h.close(); forceLogout('حساب شما حذف شد.');
+      };
+    },
+    actions: [{ label: 'بستن', cls: 'ghost' }, { label: 'ذخیره', cls: 'primary', onClick: h => {
+      const name = GK.clean(h.el.querySelector('#s-n').value).replace(/\s+/g, ' '), e = h.el.querySelector('#s-e');
+      const l = [...name].length;
+      if (l < 2 || l > 20) { e.textContent = 'نام نمایشی باید بین ۲ تا ۲۰ نویسه باشد.'; return false; }
+      if (!GK.isMod(me) && GK.hasBanned(name)) { e.textContent = 'این نام مجاز نیست.'; return false; }
+      GK.updateUser(me.id, { name, bio: GK.clean(h.el.querySelector('#s-b').value).slice(0, 120), color: GK.safeColor(color) });
+      GK.setPref(me.id, { sound: h.el.querySelector('#s-s').checked });
+      S.me = GK.userById(me.id); renderMe(); renderSidebar(); renderHeader(); renderMessages(); GK.toast('تغییرات ذخیره شد.', 'ok');
+    } }]
+  });
+}
+$('#settingsBtn').onclick = openSettings;
+$('#themeBtn').onclick = () => { GK.setTheme(GK.theme() === 'dark' ? 'light' : 'dark'); renderMe(); };
+$('#logoutBtn').onclick = async () => {
+  if (!(await GK.confirm('از حساب خارج شوی؟ پیام‌هایت ذخیره می‌مانند.', { title: 'خروج', ok: 'خروج' }))) return;
+  saveDraft(); GK.clearSession(); closeSidebar(); showAuth();
+};
+
+/* ================= همگام‌سازی بین تب‌ها ================= */
+function queue(k) {
+  S.dirty[k] = 1; clearTimeout(queue.t);
+  queue.t = setTimeout(() => {
+    const d = S.dirty; S.dirty = {}; if (!S.me || !revalidate()) return;
+    if (d.rooms) {
+      const cur = S.room && GK.roomById(S.room.id);
+      if (S.room && !cur) { const f = GK.roomsFor(S.me)[0]; GK.toast('این اتاق حذف شد.'); if (f) { openRoom(f.id); return; } S.room = null; }
+      else if (cur) S.room = cur;
+      renderPinned(); updateComposer();
+    }
+    if (d.users || d.settings) { renderMe(); updateComposer(); }
+    if (d.rooms || d.users || d.settings || d.msgs) { renderHeader(); renderSidebar(); }
+    if (d.msgs || d.users || d.settings || d.rooms) renderMessages();
+    if (d.presence) { renderMember(); renderHeader(); }
+    if (d.notify) notifyNew(d.notify);
+  }, 60);
+}
+function notifyNew(roomId) {
+  const a = GK.msgs(roomId), m = a[a.length - 1]; if (!m || m.userId === S.me.id || m.time <= (S.lastNotified[roomId] || GK.now() - 5000)) return;
+  S.lastNotified[roomId] = m.time;
+  if (GK.prefs(S.me.id).sound) GK.beep();
+  if (!(S.room && S.room.id === roomId && !document.hidden)) {
+    const r = GK.roomById(roomId); if (r) GK.toast(`پیام جدید از ${m.name} در ${GK.roomTitle(r, S.me.id) || 'گفتگوی خصوصی'}`);
+  }
+}
+GK.onChange(key => {
+  if (!S.me) return;
+  if (key === '*') { location.reload(); return; }
+  if (key === 'users') queue('users');
+  else if (key === 'rooms') queue('rooms');
+  else if (key === 'settings') queue('settings');
+  else if (key === 'presence') queue('presence');
+  else if (key.startsWith('msgs:')) { const id = key.slice(5); if (GK.roomById(id) && GK.roomsFor(S.me).some(r => r.id === id)) { S.dirty.notify = id; queue('msgs'); } }
+});
+document.addEventListener('visibilitychange', () => { if (!document.hidden && S.me && S.room) { GK.markRead(S.me.id, S.room.id); renderSidebar(); } });
+window.addEventListener('beforeunload', saveDraft);
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !document.querySelector('.gk-scrim')) closeSidebar(); });
+
+/* ================= شروع ================= */
+brand();
+$('#msg').maxLength = 5000;
+const st = GK.sessionState();
+if (st.user) enter(st.user);
+else showAuth(st.reason === 'banned' ? 'حساب شما مسدود شده است.' + (st.detail ? ' دلیل: ' + st.detail : '') : st.reason === 'deleted' ? 'حساب شما دیگر وجود ندارد.' : st.reason === 'maintenance' ? GK.settings().maintenanceMsg : '');
+}
+
+function runAdmin() {
+'use strict';
+const $ = s => document.querySelector(s);
+const { esc, fa } = GK;
+const A = { me: null, page: 'dashboard', uq: '', uf: 'all', rq: 'open', mroom: '', mq: '', sel: new Set(), lq: '', rt: 0 };
+const PAGES = [
+  ['dashboard', '📊', 'داشبورد'], ['users', '👥', 'کاربران'], ['rooms', '🚪', 'اتاق‌ها'], ['messages', '💬', 'پیام‌ها'],
+  ['reports', '⚑', 'گزارش‌ها'], ['settings', '⚙️', 'تنظیمات سایت'], ['logs', '📜', 'گزارش فعالیت'], ['backup', '💾', 'پشتیبان‌گیری']
+];
+GK.seed(); GK.applyTheme();
+GK.onError(() => GK.toast('ذخیره‌سازی مرورگر پر یا غیرفعال است.', 'error'));
+
+/* ---------- دروازه ---------- */
+function showGate() {
+  $('#shell').hidden = true; $('#gate').hidden = false;
+  const first = !GK.hasAdmin();
+  $('#gateTitle').textContent = first ? 'راه‌اندازی اولیه' : 'ورود مدیر';
+  $('#gateDesc').textContent = first ? 'هنوز مدیری ساخته نشده است. اولین حساب مدیر را بساز؛ این حساب دسترسی کامل خواهد داشت.' : 'فقط حساب‌های مدیر می‌توانند وارد پنل شوند.';
+  $('#gnWrap').hidden = $('#gp2Wrap').hidden = !first;
+  $('#gateBtn').textContent = first ? 'ساخت حساب مدیر' : 'ورود به پنل';
+  $('#gateForm').dataset.mode = first ? 'setup' : 'login'; $('#gateErr').textContent = '';
+  setTimeout(() => $('#gu').focus(), 30);
+}
+$('#gateForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const setup = e.target.dataset.mode === 'setup', err = $('#gateErr'), b = $('#gateBtn'); err.textContent = '';
+  const u = $('#gu').value, p = $('#gp').value;
+  if (!u.trim() || !p) { err.textContent = 'نام کاربری و رمز عبور را وارد کن.'; return; }
+  b.disabled = true;
+  let r;
+  if (setup) {
+    if (p !== $('#gp2').value) { err.textContent = 'رمز عبور و تکرار آن یکسان نیستند.'; b.disabled = false; return; }
+    if (GK.hasAdmin()) { b.disabled = false; showGate(); return; }
+    r = await GK.createUser({ username: u, name: $('#gn').value, password: p, color: '#e8a33d' }, { role: 'admin', bypassClosed: true });
+    if (r.ok) { GK.log('setup', 'حساب مدیر اولیه ساخته شد.', r.user.id); r = await GK.login(u, p, { adminOnly: true }); }
+  } else r = await GK.login(u, p, { adminOnly: true });
+  b.disabled = false;
+  if (!r.ok) { err.textContent = r.error; return; }
+  $('#gp').value = ''; $('#gp2').value = ''; start(r.user);
+});
+
+/* ---------- شروع ---------- */
+function start(me) {
+  A.me = me; $('#gate').hidden = true; $('#shell').hidden = false;
+  $('#whoami').textContent = me.name; $('#navSite').textContent = GK.settings().siteName + ' · مدیریت';
+  document.title = 'پنل مدیریت ' + GK.settings().siteName;
+  const h = (location.hash || '').slice(1).replace(/^admin-?/, ''); A.page = PAGES.some(p => p[0] === h) ? h : 'dashboard';
+  render();
+}
+function guard() {
+  const m = GK.adminState();
+  if (!m) { A.me = null; GK.clearAdminSession(); showGate(); return false; }
+  A.me = m; return true;
+}
+function nav() {
+  const open = GK.get('reports', []).filter(r => r.status === 'open').length;
+  $('#navList').innerHTML = PAGES.map(([id, ic, t]) => `<button data-page="${id}" ${A.page === id ? 'aria-current="page"' : ''}><span>${ic}</span>${t}${id === 'reports' && open ? `<span class="cnt">${fa(open)}</span>` : ''}</button>`).join('');
+  $('#pageTitle').textContent = (PAGES.find(p => p[0] === A.page) || PAGES[0])[2];
+}
+function render() {
+  if (!guard()) return;
+  nav();
+  const fn = { dashboard, users, rooms, messages, reports, settings, logs, backup }[A.page];
+  const y = $('#view').scrollTop; $('#content').innerHTML = fn(); $('#view').scrollTop = y;
+  const af = document.activeElement; // keep search focus
+  if (af && af.id && $('#' + af.id) !== af) { /* element replaced */ }
+}
+$('#navList').addEventListener('click', e => {
+  const b = e.target.closest('[data-page]'); if (!b) return;
+  A.page = b.dataset.page; A.sel.clear(); location.hash = 'admin-' + A.page; render(); $('#view').scrollTop = 0;
+});
+$('#aThemeBtn').onclick = () => { GK.setTheme(GK.theme() === 'dark' ? 'light' : 'dark'); };
+async function logout() {
+  if (!(await GK.confirm('از پنل مدیریت خارج شوی؟', { title: 'خروج', ok: 'خروج' }))) return;
+  GK.clearAdminSession(); showGate();
+}
+$('#aLogoutBtn').onclick = $('#aLogoutBtn2').onclick = logout;
+
+/* ---------- ابزارها ---------- */
+const sel = (v, o) => v === o ? 'selected' : '';
+const badge = u => (u.role === 'admin' ? '<span class="tag admin">مدیر</span>' : u.role === 'mod' ? '<span class="tag">ناظر</span>' : '') + (u.status === 'banned' ? ' <span class="tag bad">مسدود</span>' : '') + (u.muted ? ' <span class="tag bad">بی‌صدا</span>' : '');
+function roomName(r) {
+  if (r.type !== 'dm') return (r.icon || '💬') + ' ' + r.name;
+  const n = r.members.map(id => (GK.userById(id) || { name: 'حذف‌شده' }).name);
+  return '🔒 ' + n.join(' ↔ ');
+}
+const adminCount = () => GK.users().filter(u => u.role === 'admin' && u.status !== 'banned').length;
+function msgCounts() {
+  const c = {}; GK.rooms().forEach(r => GK.msgs(r.id).forEach(m => { c[m.userId] = (c[m.userId] || 0) + 1; })); return c;
+}
+function empty(t) { return `<div class="empty">${esc(t)}</div>`; }
+
+/* ---------- داشبورد ---------- */
+function dashboard() {
+  const us = GK.users(), rs = GK.rooms(), reports = GK.get('reports', []).filter(r => r.status === 'open');
+  const days = []; const d0 = new Date(); d0.setHours(0, 0, 0, 0);
+  for (let i = 6; i >= 0; i--) days.push({ t: d0.getTime() - i * 864e5, n: 0 });
+  let total = 0; const per = {};
+  rs.forEach(r => GK.msgs(r.id).forEach(m => {
+    total++; per[m.userId] = (per[m.userId] || 0) + 1;
+    for (let i = 6; i >= 0; i--) if (m.time >= days[i].t) { days[i].n++; break; }
+  }));
+  const mx = Math.max(1, ...days.map(d => d.n));
+  const bars = days.map((d, i) => { const h = Math.round(d.n / mx * 90), x = 14 + i * 58;
+    return `<rect x="${x}" y="${110 - h}" width="38" height="${Math.max(2, h)}" rx="7"/><text x="${x + 19}" y="${104 - h}" text-anchor="middle">${fa(d.n)}</text><text x="${x + 19}" y="128" text-anchor="middle">${new Date(d.t).toLocaleDateString('fa-IR', { weekday: 'short' })}</text>`; }).join('');
+  const top = Object.entries(per).sort((a, b) => b[1] - a[1]).slice(0, 5);
+  const used = GK.usedBytes(), pct = Math.min(100, Math.round(used / (5 * 1024 * 1024) * 100));
+  const logs = GK.get('logs', []).slice(0, 7);
+  return `<div class="stats">
+    ${[['کاربران', us.length], ['آنلاین الان', GK.onlineCount()], ['اتاق‌ها', rs.filter(r => r.type !== 'dm').length], ['پیام‌ها', total], ['گزارش باز', reports.length], ['مسدود', us.filter(u => u.status === 'banned').length]].map(([t, n]) => `<div class="stat"><b>${fa(n)}</b><span>${t}</span></div>`).join('')}</div>
+  ${GK.settings().maintenance ? '<div class="card" style="border-color:var(--warn)">⚠️ حالت تعمیر فعال است؛ فقط مدیران می‌توانند وارد شوند.</div>' : ''}
+  <div class="grid2"><div class="card"><h3>پیام‌های ۷ روز اخیر</h3><svg class="bars" viewBox="0 0 420 135" role="img" aria-label="نمودار پیام‌های هفت روز اخیر">${bars}</svg></div>
+  <div class="card"><h3>فعال‌ترین کاربران</h3>${top.length ? top.map(([id, n]) => { const u = GK.userById(id); return `<div class="li">${GK.avatar(u || { name: '؟' }, 30)}<span class="grow">${esc(u ? u.name : 'حذف‌شده')}</span><b>${fa(n)}</b></div>`; }).join('') : empty('هنوز پیامی نیست.')}</div></div>
+  <div class="grid2"><div class="card"><h3>آخرین فعالیت‌ها</h3>${logs.length ? logs.map(l => `<div class="li"><span class="grow">${esc(l.detail || l.action)}</span><span class="muted tiny">${esc(GK.ago(l.t))}</span></div>`).join('') : empty('فعالیتی ثبت نشده.')}</div>
+  <div class="card"><h3>فضای ذخیره‌سازی مرورگر</h3><div class="meter"><i style="width:${pct}%"></i></div>
+  <p class="small muted" style="margin:8px 0 0">حدود ${fa((used / 1024).toFixed(0))} کیلوبایت از ~۵ مگابایت (${fa(pct)}٪). برای امنیت بیشتر، پشتیبان بگیر.</p>
+  ${!GK.persistent ? '<p class="err">ذخیره‌سازی دائمی فعال نیست!</p>' : ''}</div></div>`;
+}
+
+/* ---------- کاربران ---------- */
+function users() {
+  const q = GK.normName(A.uq), cnt = msgCounts();
+  const list = GK.users().filter(u => {
+    if (q && !GK.normName(u.name + ' ' + u.username).includes(q)) return false;
+    return { all: true, active: u.status === 'active', banned: u.status === 'banned', muted: u.muted, admin: u.role === 'admin', mod: u.role === 'mod' }[A.uf];
+  }).sort((a, b) => b.createdAt - a.createdAt);
+  return `<div class="toolbar"><input id="uq" placeholder="جستجوی نام یا نام کاربری…" value="${esc(A.uq)}" aria-label="جستجو">
+    <select id="uf" aria-label="فیلتر">${[['all', 'همه'], ['active', 'فعال'], ['banned', 'مسدود'], ['muted', 'بی‌صدا'], ['admin', 'مدیر'], ['mod', 'ناظر']].map(([v, t]) => `<option value="${v}" ${sel(A.uf, v)}>${t}</option>`).join('')}</select>
+    <button class="btn primary" data-act="newuser">＋ کاربر جدید</button></div>
+  <div class="tblwrap"><table><thead><tr><th>کاربر</th><th>وضعیت</th><th>پیام‌ها</th><th>آخرین بازدید</th><th>عضویت</th><th>عملیات</th></tr></thead><tbody>
+  ${list.map(u => { const self = u.id === A.me.id; return `<tr data-id="${esc(u.id)}"><td><div class="row">${GK.avatar(u, 34)}<div><b>${esc(u.name)}</b><div class="muted tiny ltr">@${esc(u.username)}</div></div></div></td>
+    <td>${badge(u) || '<span class="tag ok">فعال</span>'} ${GK.isOnline(u.id) ? '<span class="dot on" title="آنلاین"></span>' : ''}</td><td>${fa(cnt[u.id] || 0)}</td><td class="small">${esc(GK.ago(GK.lastSeen(u)))}</td><td class="small">${esc(GK.dateText(u.createdAt))}</td>
+    <td><div class="acts"><button class="btn sm" data-act="edituser">ویرایش</button>
+    ${self ? '' : `<button class="btn sm" data-act="${u.status === 'banned' ? 'unban' : 'ban'}">${u.status === 'banned' ? 'رفع مسدودی' : 'مسدود'}</button><button class="btn sm" data-act="mute">${u.muted ? 'صدادار' : 'بی‌صدا'}</button>`}
+    <button class="btn sm" data-act="resetpw">رمز جدید</button>${self ? '' : '<button class="btn sm danger" data-act="deluser">حذف</button>'}</div></td></tr>`; }).join('')}
+  </tbody></table>${list.length ? '' : empty('کاربری پیدا نشد.')}</div>`;
+}
+async function userAct(act, id) {
+  const u = GK.userById(id), me = A.me;
+  if (act === 'newuser') return newUser();
+  if (!u) { GK.toast('کاربر پیدا نشد.', 'error'); return render(); }
+  if (act === 'edituser') {
+    let color = u.color;
+    const h = GK.modal({
+      title: 'ویرایش ' + u.name,
+      body: `<div class="field"><label class="lbl">نام کاربری</label><input value="${esc(u.username)}" class="ltr" disabled></div>
+        <div class="field"><label class="lbl" for="e-n">نام نمایشی</label><input id="e-n" maxlength="20" value="${esc(u.name)}"></div>
+        <div class="field"><label class="lbl" for="e-b">درباره</label><textarea id="e-b" rows="2" maxlength="120">${esc(u.bio || '')}</textarea></div>
+        <div class="field"><label class="lbl" for="e-r">نقش</label><select id="e-r"><option value="user" ${sel(u.role, 'user')}>کاربر</option><option value="mod" ${sel(u.role, 'mod')}>ناظر (حذف پیام، سنجاق، قفل)</option><option value="admin" ${sel(u.role, 'admin')}>مدیر (دسترسی کامل پنل)</option></select></div>
+        <div class="field"><label class="lbl">رنگ</label><div class="row wrap" id="e-c"></div></div><div class="err" id="e-e"></div>`,
+      onOpen: hh => { const box = hh.el.querySelector('#e-c'); GK.COLORS.forEach(c => { const b = document.createElement('button'); b.type = 'button'; b.style.cssText = `width:28px;height:28px;border-radius:50%;background:${c};border:3px solid ${c === color ? 'var(--text)' : 'transparent'}`; b.onclick = () => { color = c; [...box.children].forEach(x => x.style.borderColor = 'transparent'); b.style.borderColor = 'var(--text)'; }; box.append(b); }); },
+      actions: [{ label: 'انصراف', cls: 'ghost' }, { label: 'ذخیره', cls: 'primary', onClick: hh => {
+        const name = GK.clean(hh.el.querySelector('#e-n').value).replace(/\s+/g, ' '), role = hh.el.querySelector('#e-r').value, e = hh.el.querySelector('#e-e');
+        if ([...name].length < 2 || [...name].length > 20) { e.textContent = 'نام باید بین ۲ تا ۲۰ نویسه باشد.'; return false; }
+        if (u.role === 'admin' && role !== 'admin' && (u.id === me.id || adminCount() < 2)) { e.textContent = 'نمی‌توان آخرین مدیر را تنزل داد.'; return false; }
+        GK.updateUser(u.id, { name, role, color, bio: GK.clean(hh.el.querySelector('#e-b').value).slice(0, 120) });
+        if (role !== u.role) GK.log('role', `نقش «${name}» به ${GK.roleLabel(role)} تغییر کرد.`, me.id);
+        GK.toast('ذخیره شد.', 'ok');
+      } }]
+    }); await h.done; return render();
+  }
+  if (act === 'ban') {
+    const reason = await GK.prompt({ title: 'مسدود کردن ' + u.name, label: 'دلیل (اختیاری، به کاربر نمایش داده می‌شود)', ok: 'مسدود کن', maxlength: 120 });
+    if (reason === null) return;
+    GK.updateUser(u.id, { status: 'banned', banReason: GK.clean(reason) }); GK.log('ban', `«${u.name}» مسدود شد.`, me.id); GK.toast('کاربر مسدود شد.', 'ok');
+  } else if (act === 'unban') { GK.updateUser(u.id, { status: 'active', banReason: '' }); GK.log('unban', `مسدودی «${u.name}» برداشته شد.`, me.id); GK.toast('مسدودی برداشته شد.', 'ok'); }
+  else if (act === 'mute') { GK.updateUser(u.id, { muted: !u.muted }); GK.log('mute', `«${u.name}» ${u.muted ? 'صدادار' : 'بی‌صدا'} شد.`, me.id); }
+  else if (act === 'resetpw') {
+    if (!(await GK.confirm(`برای «${u.name}» رمز جدید ساخته شود؟ رمز قبلی از کار می‌افتد.`, { title: 'رمز جدید', ok: 'بساز' }))) return;
+    const pw = GK.randomPassword(10); const r = await GK.setPassword(u.id, pw); if (!r.ok) { GK.toast(r.error, 'error'); return; }
+    GK.log('reset-password', `رمز «${u.name}» بازنشانی شد.`, me.id);
+    await GK.modal({ title: 'رمز جدید ساخته شد', body: `<p class="gk-p">رمز موقت ${esc(u.name)} را به او بده و بخواه بعد از ورود تغییرش دهد. این رمز دوباره نمایش داده نمی‌شود.</p><input class="ltr" readonly value="${esc(pw)}" style="font-weight:900;text-align:center;font-size:18px" onfocus="this.select()">`, actions: [{ label: 'کپی', cls: 'primary', onClick: async () => { try { await navigator.clipboard.writeText(pw); GK.toast('کپی شد.', 'ok'); } catch { GK.toast('کپی نشد؛ دستی کپی کن.', 'error'); } return false; } }, { label: 'بستن', cls: 'ghost' }] }).done;
+  } else if (act === 'deluser') {
+    if (u.role === 'admin' && adminCount() < 2) { GK.toast('آخرین مدیر قابل حذف نیست.', 'error'); return; }
+    let purge = false;
+    const ok = await GK.modal({ title: 'حذف ' + u.name, body: `<p class="gk-p">این حساب برای همیشه حذف می‌شود و پیام‌های خصوصی‌اش هم پاک می‌شود.</p><label class="check"><input type="checkbox" id="pg"> پیام‌های او در اتاق‌ها هم حذف شود</label>`, actions: [{ label: 'انصراف', cls: 'ghost', value: false }, { label: 'حذف همیشگی', cls: 'danger solid', onClick: h => { purge = h.el.querySelector('#pg').checked; } }] }).done;
+    if (ok !== true) return;
+    GK.deleteUser(u.id, { purge, by: me.id }); GK.toast('حساب حذف شد.', 'ok');
+  }
+  render();
+}
+async function newUser() {
+  const h = GK.modal({
+    title: 'کاربر جدید',
+    body: `<div class="field"><label class="lbl" for="n-u">نام کاربری</label><input id="n-u" class="ltr" maxlength="20"></div>
+      <div class="field"><label class="lbl" for="n-n">نام نمایشی</label><input id="n-n" maxlength="20"></div>
+      <div class="field"><label class="lbl" for="n-p">رمز عبور</label><div class="row"><input id="n-p" class="ltr" maxlength="64"><button type="button" class="btn" id="n-g">تصادفی</button></div></div>
+      <div class="field"><label class="lbl" for="n-r">نقش</label><select id="n-r"><option value="user">کاربر</option><option value="mod">ناظر</option><option value="admin">مدیر</option></select></div><div class="err" id="n-e"></div>`,
+    onOpen: hh => { hh.el.querySelector('#n-g').onclick = () => { hh.el.querySelector('#n-p').value = GK.randomPassword(10); }; },
+    actions: [{ label: 'انصراف', cls: 'ghost' }, { label: 'ساخت کاربر', cls: 'primary', onClick: async hh => {
+      const r = await GK.createUser({ username: hh.el.querySelector('#n-u').value, name: hh.el.querySelector('#n-n').value, password: hh.el.querySelector('#n-p').value, color: GK.COLORS[Math.floor(Math.random() * GK.COLORS.length)] }, { role: hh.el.querySelector('#n-r').value, bypassClosed: true });
+      if (!r.ok) { hh.el.querySelector('#n-e').textContent = r.error; return false; }
+      GK.log('create-user', `مدیر کاربر «${r.user.name}» را ساخت.`, A.me.id); GK.toast('کاربر ساخته شد.', 'ok');
+    } }]
+  }); await h.done; render();
+}
+
+/* ---------- اتاق‌ها ---------- */
+function rooms() {
+  const all = GK.rooms(), pub = all.filter(r => r.type !== 'dm'), dms = all.filter(r => r.type === 'dm');
+  return `<div class="toolbar"><button class="btn primary" data-act="newroom">＋ اتاق جدید</button><span class="muted small">${fa(pub.length)} اتاق عمومی · ${fa(dms.length)} گفتگوی خصوصی</span></div>
+  <div class="tblwrap"><table><thead><tr><th>اتاق</th><th>پیام‌ها</th><th>وضعیت</th><th>ساخته‌شده</th><th>عملیات</th></tr></thead><tbody>
+  ${pub.map(r => `<tr data-id="${esc(r.id)}"><td><b>${esc(r.icon)} ${esc(r.name)}</b><div class="muted tiny">${esc(r.desc || '')}</div></td><td>${fa(GK.msgs(r.id).length)}</td>
+  <td>${r.locked ? '<span class="tag bad">قفل</span>' : '<span class="tag ok">باز</span>'}</td><td class="small">${esc(GK.dateText(r.createdAt))}</td>
+  <td><div class="acts"><button class="btn sm" data-act="editroom">ویرایش</button><button class="btn sm" data-act="lockroom">${r.locked ? 'باز کردن' : 'قفل'}</button><button class="btn sm" data-act="viewroom">پیام‌ها</button><button class="btn sm danger" data-act="clearroom">پاک‌سازی</button><button class="btn sm danger" data-act="delroom">حذف</button></div></td></tr>`).join('')}
+  </tbody></table>${pub.length ? '' : empty('اتاقی وجود ندارد.')}</div>`;
+}
+const ICONS = ['💬', '💻', '🎮', '🎵', '📚', '⚽', '☕', '🌍', '🎬', '🍕', '🎨', '🚀'];
+async function roomForm(r) {
+  const h = GK.modal({
+    title: r ? 'ویرایش اتاق' : 'اتاق جدید',
+    body: `<div class="field"><label class="lbl" for="q-n">نام</label><input id="q-n" maxlength="30" value="${esc(r ? r.name : '')}"></div>
+      <div class="field"><label class="lbl" for="q-d">توضیح</label><input id="q-d" maxlength="140" value="${esc(r ? r.desc : '')}"></div>
+      <div class="field"><label class="lbl" for="q-i">آیکون</label><select id="q-i">${ICONS.map(i => `<option ${sel(r ? r.icon : '💬', i)}>${i}</option>`).join('')}</select></div><div class="err" id="q-e"></div>`,
+    actions: [{ label: 'انصراف', cls: 'ghost' }, { label: 'ذخیره', cls: 'primary', onClick: hh => {
+      const v = { name: hh.el.querySelector('#q-n').value, desc: hh.el.querySelector('#q-d').value, icon: hh.el.querySelector('#q-i').value };
+      const res = r ? GK.updateRoom(r.id, v, A.me.id) : GK.createRoom({ ...v, by: A.me.id });
+      if (!res.ok) { hh.el.querySelector('#q-e').textContent = res.error; return false; }
+      GK.toast('ذخیره شد.', 'ok');
+    } }]
+  }); await h.done; render();
+}
+async function roomAct(act, id) {
+  const r = GK.roomById(id); if (act === 'newroom') return roomForm(null);
+  if (!r) { GK.toast('اتاق پیدا نشد.', 'error'); return render(); }
+  if (act === 'editroom') return roomForm(r);
+  if (act === 'lockroom') { GK.updateRoom(id, { locked: !r.locked }, A.me.id); }
+  else if (act === 'viewroom') { A.page = 'messages'; A.mroom = id; location.hash = 'admin-messages'; }
+  else if (act === 'clearroom') { if (!(await GK.confirm(`همه‌ی پیام‌های «${r.name}» پاک شود؟`, { title: 'پاک‌سازی اتاق', ok: 'پاک کن', danger: true }))) return; GK.clearRoom(id, A.me.id); GK.toast('پیام‌ها پاک شد.', 'ok'); }
+  else if (act === 'delroom') { if (!(await GK.confirm(`اتاق «${r.name}» همراه همه‌ی پیام‌هایش حذف شود؟`, { title: 'حذف اتاق', ok: 'حذف', danger: true }))) return; GK.deleteRoom(id, A.me.id); GK.toast('اتاق حذف شد.', 'ok'); }
+  render();
+}
+
+/* ---------- پیام‌ها ---------- */
+function messages() {
+  const rs = GK.rooms(); if (!A.mroom || !GK.roomById(A.mroom)) A.mroom = rs[0] ? rs[0].id : '';
+  const q = GK.normName(A.mq);
+  let list = A.mroom ? GK.msgs(A.mroom) : [];
+  if (q) list = list.filter(m => GK.normName(m.text + ' ' + m.name).includes(q));
+  const shown = list.slice(-200).reverse();
+  return `<div class="toolbar"><select id="mr" aria-label="اتاق" style="max-width:320px">${rs.map(r => `<option value="${esc(r.id)}" ${sel(A.mroom, r.id)}>${esc(roomName(r))} (${fa(GK.msgs(r.id).length)})</option>`).join('')}</select>
+    <input id="mq" placeholder="جستجو در متن یا نام فرستنده…" value="${esc(A.mq)}" aria-label="جستجو">
+    <button class="btn danger" data-act="delsel" ${A.sel.size ? '' : 'disabled'}>حذف انتخاب‌شده‌ها (${fa(A.sel.size)})</button></div>
+  <div class="tblwrap">${shown.map(m => { const u = GK.userById(m.userId); return `<div class="msgrow" data-id="${esc(m.id)}"><input type="checkbox" data-sel="${esc(m.id)}" ${A.sel.has(m.id) ? 'checked' : ''} aria-label="انتخاب پیام">
+    ${GK.avatar(u || { name: m.name, color: m.color }, 32)}<div class="grow"><div><b>${esc(u ? u.name : m.name)}</b> <span class="muted tiny">${esc(GK.dateTime(m.time))}${m.edited ? ' · ویرایش‌شده' : ''}</span></div><div class="txt">${esc(m.text)}</div></div>
+    <button class="btn sm danger" data-act="delmsg">حذف</button></div>`; }).join('')}${shown.length ? '' : empty(A.mroom ? 'پیامی پیدا نشد.' : 'اتاقی وجود ندارد.')}</div>
+  ${list.length > 200 ? `<p class="muted small">فقط ۲۰۰ پیام آخر نمایش داده شد (${fa(list.length)} پیام).</p>` : ''}`;
+}
+async function msgAct(act, id) {
+  let ids = act === 'delsel' ? [...A.sel] : [id];
+  if (!ids.length) return;
+  if (!(await GK.confirm(`${fa(ids.length)} پیام حذف شود؟`, { title: 'حذف پیام', ok: 'حذف', danger: true }))) return;
+  const r = GK.deleteMessages(A.mroom, ids, A.me.id); if (!r.ok) GK.toast(r.error, 'error'); else GK.toast('حذف شد.', 'ok');
+  A.sel.clear(); render();
+}
+
+/* ---------- گزارش‌ها ---------- */
+function reports() {
+  const all = GK.get('reports', []), list = all.filter(r => A.rq === 'all' || (A.rq === 'open') === (r.status === 'open'));
+  return `<div class="toolbar"><select id="rq" aria-label="فیلتر"><option value="open" ${sel(A.rq, 'open')}>باز</option><option value="closed" ${sel(A.rq, 'closed')}>بسته‌شده</option><option value="all" ${sel(A.rq, 'all')}>همه</option></select>
+    ${all.some(r => r.status !== 'open') ? '<button class="btn" data-act="purgerep">پاک کردن گزارش‌های بسته‌شده</button>' : ''}</div>
+  ${list.map(r => { const rep = GK.userById(r.reporterId), au = GK.userById(r.authorId), room = GK.roomById(r.roomId); return `<div class="card" data-id="${esc(r.id)}">
+    <div class="row wrap"><b>${esc(r.authorName)}</b><span class="muted small">در ${esc(room ? roomName(room) : 'اتاق حذف‌شده')}</span><span class="grow"></span><span class="muted tiny">${esc(GK.ago(r.time))}</span>${r.status === 'open' ? '<span class="tag bad">باز</span>' : '<span class="tag ok">بسته</span>'}</div>
+    <p class="gk-p" style="background:var(--field);padding:10px 12px;border-radius:12px">${esc(r.text)}</p>
+    <div class="small muted">گزارش از ${esc(rep ? rep.name : 'کاربر حذف‌شده')} · دلیل: ${esc(r.reason)}</div>
+    ${r.status === 'open' ? `<div class="acts" style="margin-top:12px"><button class="btn sm danger" data-act="repdel">حذف پیام</button>${au ? '<button class="btn sm danger" data-act="repban">مسدود نویسنده</button><button class="btn sm" data-act="repmute">بی‌صدا کردن</button>' : ''}<button class="btn sm" data-act="repdone">بستن گزارش</button></div>` : ''}</div>`; }).join('') || `<div class="card">${empty('گزارشی وجود ندارد.')}</div>`}`;
+}
+async function repAct(act, id) {
+  if (act === 'purgerep') { GK.set('reports', GK.get('reports', []).filter(r => r.status === 'open')); return render(); }
+  const all = GK.get('reports', []), r = all.find(x => x.id === id); if (!r) return render();
+  const close = () => { r.status = 'closed'; GK.set('reports', all); };
+  if (act === 'repdel') { GK.deleteMessages(r.roomId, [r.msgId], A.me.id); close(); GK.toast('پیام حذف و گزارش بسته شد.', 'ok'); }
+  else if (act === 'repdone') close();
+  else if (act === 'repban' || act === 'repmute') {
+    const u = GK.userById(r.authorId); if (!u) { close(); return render(); }
+    if (u.role === 'admin') { GK.toast('مدیر را نمی‌توان مسدود یا بی‌صدا کرد.', 'error'); return; }
+    if (act === 'repban') { GK.updateUser(u.id, { status: 'banned', banReason: 'تخلف از قوانین' }); GK.log('ban', `«${u.name}» بر اساس گزارش مسدود شد.`, A.me.id); }
+    else { GK.updateUser(u.id, { muted: true }); GK.log('mute', `«${u.name}» بر اساس گزارش بی‌صدا شد.`, A.me.id); }
+    close(); GK.toast('انجام شد.', 'ok');
+  }
+  render();
+}
+
+/* ---------- تنظیمات ---------- */
+function settings() {
+  const s = GK.settings();
+  const sw = (id, t, d, v) => `<div class="sw"><div><b>${t}</b><small>${d}</small></div><input type="checkbox" id="${id}" ${v ? 'checked' : ''} style="width:20px;height:20px"></div>`;
+  return `<div class="card"><h3>عمومی</h3><div class="form2">
+    <div class="field"><label class="lbl" for="s-name">نام سایت</label><input id="s-name" maxlength="30" value="${esc(s.siteName)}"></div>
+    <div class="field"><label class="lbl" for="s-max">حداکثر طول پیام (نویسه)</label><input id="s-max" type="number" min="20" max="5000" value="${s.maxLen}"></div>
+    <div class="field"><label class="lbl" for="s-slow">حالت آهسته (ثانیه بین پیام‌ها، ۰ = خاموش)</label><input id="s-slow" type="number" min="0" max="3600" value="${s.slowMode}"></div>
+    <div class="field"><label class="lbl" for="s-minp">حداقل طول رمز عبور</label><input id="s-minp" type="number" min="4" max="32" value="${s.minPass}"></div></div>
+    <div class="field"><label class="lbl" for="s-wel">پیام خوش‌آمدگویی</label><textarea id="s-wel" rows="2" maxlength="300">${esc(s.welcome)}</textarea></div></div>
+  <div class="card"><h3>دسترسی‌ها</h3>
+    ${sw('s-reg', 'ثبت‌نام باز باشد', 'اگر خاموش شود کاربر جدید نمی‌تواند حساب بسازد.', s.registrationOpen)}
+    ${sw('s-room', 'کاربران بتوانند اتاق بسازند', 'ناظران و مدیران همیشه می‌توانند.', s.allowRoomCreate)}
+    ${sw('s-dm', 'پیام خصوصی فعال باشد', 'گفتگوی دو نفره بین اعضا.', s.allowDM)}
+    ${sw('s-edit', 'ویرایش پیام مجاز باشد', 'کاربران فقط پیام خودشان را ویرایش می‌کنند.', s.allowEdit)}
+    ${sw('s-mnt', 'حالت تعمیر', 'همه‌ی کاربران غیر از مدیران از سیستم خارج می‌شوند.', s.maintenance)}
+    <div class="field" style="margin-top:12px"><label class="lbl" for="s-mm">پیام حالت تعمیر</label><input id="s-mm" maxlength="150" value="${esc(s.maintenanceMsg)}"></div></div>
+  <div class="card"><h3>فیلتر کلمات ممنوع</h3><div class="field"><label class="lbl" for="s-bw">هر کلمه در یک خط (در پیام‌ها با • جایگزین می‌شود)</label><textarea id="s-bw" rows="5">${esc(s.bannedWords.join('\n'))}</textarea></div></div>
+  <button class="btn primary" data-act="savesettings">ذخیره‌ی تنظیمات</button>`;
+}
+function saveSettings() {
+  const g = id => $('#' + id), n = (id, a, b, d) => GK.clamp(parseInt(g(id).value, 10) || d, a, b);
+  const name = GK.clean(g('s-name').value);
+  if ([...name].length < 2) { GK.toast('نام سایت خیلی کوتاه است.', 'error'); return; }
+  GK.saveSettings({
+    siteName: name, maxLen: n('s-max', 20, 5000, 700), slowMode: n('s-slow', 0, 3600, 0), minPass: n('s-minp', 4, 32, 6),
+    welcome: GK.clean(g('s-wel').value), registrationOpen: g('s-reg').checked, allowRoomCreate: g('s-room').checked, allowDM: g('s-dm').checked,
+    allowEdit: g('s-edit').checked, maintenance: g('s-mnt').checked, maintenanceMsg: GK.clean(g('s-mm').value) || GK.DEFAULTS.maintenanceMsg,
+    bannedWords: [...new Set(g('s-bw').value.split('\n').map(x => GK.clean(x)).filter(Boolean))].slice(0, 200)
+  });
+  GK.log('settings', 'تنظیمات سایت ذخیره شد.', A.me.id); GK.toast('تنظیمات ذخیره شد.', 'ok'); render();
+}
+
+/* ---------- گزارش فعالیت ---------- */
+function logs() {
+  const q = GK.normName(A.lq), list = GK.get('logs', []).filter(l => !q || GK.normName(l.detail + ' ' + l.actor + ' ' + l.action).includes(q)).slice(0, 300);
+  return `<div class="toolbar"><input id="lq" placeholder="جستجو در فعالیت‌ها…" value="${esc(A.lq)}" aria-label="جستجو"><button class="btn danger" data-act="clearlogs">پاک کردن گزارش‌ها</button></div>
+  <div class="tblwrap"><table><thead><tr><th>زمان</th><th>انجام‌دهنده</th><th>رویداد</th></tr></thead><tbody>
+  ${list.map(l => `<tr><td class="small">${esc(GK.dateTime(l.t))}</td><td>${esc(l.actor)}</td><td>${esc(l.detail || l.action)} <span class="tag">${esc(l.action)}</span></td></tr>`).join('')}</tbody></table>${list.length ? '' : empty('رویدادی ثبت نشده.')}</div>`;
+}
+
+/* ---------- پشتیبان‌گیری ---------- */
+function backup() {
+  const ex = GK.exportAll();
+  return `<div class="card"><h3>پشتیبان کامل</h3><p class="muted">شامل کاربران، اتاق‌ها، پیام‌ها، تنظیمات، گزارش‌ها و فعالیت‌ها. رمزها به‌صورت هش‌شده ذخیره می‌شوند. (${fa(Object.keys(ex.data).length)} بخش)</p>
+    <div class="acts"><button class="btn primary" data-act="export">📥 دانلود پشتیبان</button><button class="btn" data-act="import">📤 بازگردانی از فایل</button></div>
+    <input type="file" id="file" accept="application/json,.json" hidden></div>
+  <div class="card"><h3>ابزار داده‌ی نمایشی</h3><p class="muted">چند کاربر و پیام نمونه می‌سازد تا پنل را آزمایش کنی (رمز همه‌ی کاربران نمایشی: demo1234).</p><button class="btn" data-act="demo">ساخت داده‌ی نمایشی</button></div>
+  <div class="card" style="border-color:color-mix(in srgb,var(--danger) 50%,transparent)"><h3 style="color:var(--danger)">منطقه‌ی خطر</h3><p class="muted">حذف همه‌ی داده‌ها، از جمله حساب مدیر. این کار برگشت‌پذیر نیست؛ ابتدا پشتیبان بگیر.</p><button class="btn danger" data-act="reset">پاک کردن همه‌چیز</button></div>`;
+}
+async function backAct(act) {
+  if (act === 'export') { GK.download('gapkhane-backup-' + new Date().toISOString().slice(0, 10) + '.json', JSON.stringify(GK.exportAll())); GK.log('backup', 'پشتیبان دانلود شد.', A.me.id); GK.toast('پشتیبان آماده شد.', 'ok'); }
+  else if (act === 'import') $('#file').click();
+  else if (act === 'demo') {
+    const names = [['sara', 'سارا'], ['armin', 'آرمین'], ['nika', 'نیکا'], ['reza', 'رضا']];
+    for (const [u, n] of names) if (!GK.userByName(u)) await GK.createUser({ username: u, name: n, password: 'demo1234', color: GK.COLORS[Math.floor(Math.random() * GK.COLORS.length)] }, { bypassClosed: true });
+    const room = GK.rooms().find(r => r.type !== 'dm'), lines = ['سلام به همه 👋', 'امروز چه خبر؟', 'من یه ایده برای پروژه دارم ✨', 'عالیه، تعریف کن!', 'فردا شب دورهمی آنلاین داریم 🎉'];
+    if (room) { const arr = GK.msgs(room.id).slice(); const base = Date.now() - 36e5; names.forEach(([u], i) => { const us = GK.userByName(u); if (us) arr.push({ id: 'm_' + GK.uid(), roomId: room.id, userId: us.id, name: us.name, color: us.color, text: lines[i % lines.length], time: base + i * 6e4, replyTo: null, edited: 0, reactions: {} }); }); GK.set('msgs:' + room.id, arr); }
+    GK.log('demo', 'داده‌ی نمایشی ساخته شد.', A.me.id); GK.toast('داده‌ی نمایشی ساخته شد.', 'ok'); render();
+  } else if (act === 'reset') {
+    const t = await GK.prompt({ title: 'پاک کردن همه‌چیز', label: 'برای تأیید عبارت RESET را بنویس', ok: 'پاک کن', maxlength: 10, validate: v => v.trim() === 'RESET' ? '' : 'عبارت درست نیست.' });
+    if (t === null) return; GK.resetAll(); GK.seed(); location.reload();
+  }
+}
+$('#content').addEventListener('change', async e => {
+  if (e.target.id === 'file') {
+    const f = e.target.files[0]; if (!f) return; e.target.value = '';
+    if (f.size > 20 * 1024 * 1024) { GK.toast('فایل خیلی بزرگ است.', 'error'); return; }
+    let obj; try { obj = JSON.parse(await f.text()); } catch { GK.toast('فایل JSON معتبر نیست.', 'error'); return; }
+    if (!(await GK.confirm('همه‌ی داده‌های فعلی با محتوای این فایل جایگزین می‌شود. ادامه می‌دهی؟', { title: 'بازگردانی پشتیبان', ok: 'بازگردانی', danger: true }))) return;
+    const r = GK.importAll(obj); if (!r.ok) { GK.toast(r.error, 'error'); return; }
+    GK.clearAdminSession(); GK.toast('بازگردانی انجام شد؛ دوباره وارد شو.', 'ok'); setTimeout(() => location.reload(), 900);
+  } else if (e.target.id === 'uf') { A.uf = e.target.value; render(); }
+  else if (e.target.id === 'rq') { A.rq = e.target.value; render(); }
+  else if (e.target.id === 'mr') { A.mroom = e.target.value; A.sel.clear(); render(); }
+  else if (e.target.dataset.sel) { e.target.checked ? A.sel.add(e.target.dataset.sel) : A.sel.delete(e.target.dataset.sel); render(); }
+});
+function keepFocus(id, key, val) {
+  A[key] = val; render(); const el = $('#' + id); if (el) { el.focus(); el.setSelectionRange(el.value.length, el.value.length); }
+}
+$('#content').addEventListener('input', e => {
+  const m = { uq: 'uq', mq: 'mq', lq: 'lq' }[e.target.id]; if (m) keepFocus(e.target.id, m, e.target.value);
+});
+$('#content').addEventListener('click', async e => {
+  const b = e.target.closest('[data-act]'); if (!b || b.disabled) return;
+  const act = b.dataset.act, row = b.closest('[data-id]'), id = row ? row.dataset.id : null;
+  b.disabled = true;
+  try {
+    if (['newuser', 'edituser', 'ban', 'unban', 'mute', 'resetpw', 'deluser'].includes(act)) await userAct(act, id);
+    else if (['newroom', 'editroom', 'lockroom', 'viewroom', 'clearroom', 'delroom'].includes(act)) await roomAct(act, id);
+    else if (['delmsg', 'delsel'].includes(act)) await msgAct(act, id);
+    else if (['repdel', 'repban', 'repmute', 'repdone', 'purgerep'].includes(act)) await repAct(act, id);
+    else if (act === 'savesettings') saveSettings();
+    else if (act === 'clearlogs') { if (await GK.confirm('همه‌ی گزارش فعالیت‌ها پاک شود؟', { ok: 'پاک کن', danger: true })) { GK.set('logs', []); render(); } }
+    else await backAct(act);
+  } catch (err) { console.error(err); GK.toast('خطایی رخ داد.', 'error'); }
+  b.disabled = false;
+});
+
+/* ---------- همگام‌سازی ---------- */
+GK.onChange(key => {
+  if (!A.me || /^(attempts|lastsend|session|theme)$/.test(key) || key.startsWith('prefs:') || key.startsWith('read:')) return;
+  if (key === 'presence' && !['dashboard', 'users'].includes(A.page)) return;
+  clearTimeout(A.rt);
+  A.rt = setTimeout(() => {
+    if (!A.me) return;
+    const ae = document.activeElement, typing = ae && /^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName);
+    if (document.querySelector('.gk-scrim') || typing || A.page === 'settings') nav(); else render();
+  }, 400);
+});
+setInterval(() => { if (A.me) guard() && A.page === 'dashboard' && !document.querySelector('.gk-scrim') && render(); }, 30000);
+window.addEventListener('hashchange', () => { const h = location.hash.slice(1).replace(/^admin-?/, ''); if (A.me && PAGES.some(p => p[0] === h) && h !== A.page) { A.page = h; render(); } });
+
+/* ---------- شروع ---------- */
+const m = GK.adminState();
+if (m) start(m); else showGate();
+}
+
+const ADMIN = location.hash.startsWith('#admin');
+document.body.dataset.app = ADMIN ? 'admin' : 'chat';
+document.getElementById('adminRoot').hidden = !ADMIN;
+document.getElementById('chatRoot').hidden = ADMIN;
+addEventListener('hashchange', () => { if (location.hash.startsWith('#admin') !== ADMIN) location.reload(); });
+const bootEl = document.getElementById('boot'), bootTxt = document.getElementById('bootTxt');
+GK.onStatus(st => { if (!bootEl.hidden) bootTxt.textContent = ({ connecting: 'در حال اتصال به سرور…', online: 'در حال بارگذاری…', offline: 'اتصال برقرار نشد؛ در حال تلاش دوباره…', denied: 'دسترسی به پایگاه‌داده رد شد؛ قوانین Firebase را بررسی کن.' })[st] || ''; });
+GK.ready.then(() => { bootEl.hidden = true; if (ADMIN) runAdmin(); else runChat(); });
+</script>
+</body>
+</html>
